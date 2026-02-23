@@ -1,11 +1,85 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Fancy 的博客</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            background: #444;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            color: #ffcc00;
+        }
+        .container {
+            width: 80%;
+            margin: 30px auto;
+        }
+        .post {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .post h2 {
+            margin-top: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
-    <p>GitHub Pages 修复成功</p>
+
+<header>
+    <h1>Fancy 的博客</h1>
+    <p>记录学习与成长 ✨</p>
+</header>
+
+<nav>
+    <a href="#">首页</a>
+    <a href="#">关于我</a>
+    <a href="#">文章</a>
+    <a href="#">联系</a>
+</nav>
+
+<div class="container">
+    <div class="post">
+        <h2>我的第一篇文章</h2>
+        <p>这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。</p>
+    </div>
+
+    <div class="post">
+        <h2>GitHub Pages 搭建记录</h2>
+        <p>今天成功把网站部署到了 GitHub Pages，非常开心！</p>
+    </div>
+</div>
+
+<footer>
+    © 2026 Fancy Blog | Powered by GitHub Pages
+</footer>
+
 </body>
 </html>
