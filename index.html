@@ -139,11 +139,13 @@ footer {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     height: 4px;
-    background: orange;
+    background: linear-gradient(90deg, #ff8a00, #ffb347);
     width: 0%;
-    z-index: 2000;
+    z-index: 9999;
 }
+    transition: width 0.1s ease-out;
 </style>
 </head>
 <body>
@@ -215,13 +217,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // 滚动进度条
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.scrollY;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const progress = (scrollTop / docHeight) * 100;
-        document.getElementById('progressBar').style.width = progress + "%";
-    });
+    const progressBar = document.getElementById("progressBar");
 
+window.addEventListener("scroll", () => {
+  const scrollTop = document.documentElement.scrollTop;
+  const scrollHeight =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
+
+  const percent = (scrollTop / scrollHeight) * 100;
+
+  progressBar.style.width = percent + "%";
 });
 </script>
 </body>
