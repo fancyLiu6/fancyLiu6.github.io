@@ -33,60 +33,59 @@ body {
 }
 
 header {
-    background-color: rgba(0,0,0,0.8);
-    color: white;
-    padding: 40px;
-    text-align: center;
+  text-align: center;
+  padding: 100px 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.6));
+  backdrop-filter: blur(10px);
 }
 
 nav {
-    background: rgba(0,0,0,0.7);
-    padding: 10px;
-    text-align: center;
-
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+  position: sticky;
+  top: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  padding: 15px 0;
+  z-index: 1000;
 }
 
 nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-    position: relative;
+  color: white;
+  text-decoration: none;
+  margin: 0 20px;
+  position: relative;
 }
 
 nav a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -5px;
-    width: 0%;
-    height: 2px;
-    background: #ff9800;
-    transition: 0.3s;
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: #ff9800;
+  transition: 0.3s;
 }
 
 nav a:hover::after {
-    width: 100%;
+  width: 100%;
 }
 
 .post {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 20px;
-    margin: 30px auto;
-    width: 80%;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    transition: all 0.3s ease;
-    color: white;
+  margin: 40px auto;
+  padding: 40px;
+  max-width: 900px;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.2);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .post:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 footer {
@@ -134,31 +133,29 @@ footer {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
-  font-weight: bold;
-  letter-spacing: 2px;
-  animation: typing 3s steps(12) forwards;
   position: relative;
+  letter-spacing: 2px;
+  font-weight: bold;
+
+  animation: typing 2.8s steps(12, end) forwards;
 }
 
-/* 打字动画 */
 @keyframes typing {
   from { width: 0 }
   to { width: 12ch }
 }
 
-/* 光标 */
 .typing::after {
   content: "";
   position: absolute;
   right: -6px;
-  top: 0;
-  width: 3px;
-  height: 100%;
+  top: 10%;
+  width: 2px;
+  height: 80%;
   background: white;
   animation: blink 0.8s infinite;
 }
 
-/* 光标闪烁 */
 @keyframes blink {
   50% { opacity: 0 }
 }
@@ -175,6 +172,14 @@ footer {
     transition: width 0.1s ease-out;
         html, body {
   overflow-x: hidden;
+}
+        body.dark {
+  background: #0f0f0f;
+  color: white;
+}
+
+body.dark .post {
+  background: rgba(255,255,255,0.05);
 }
 </style>
 </head>
