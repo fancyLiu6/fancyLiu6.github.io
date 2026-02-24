@@ -190,32 +190,38 @@ const observer = new IntersectionObserver(entries => {
 elements.forEach(el => observer.observe(el));
 </script>
    <script>
-const toggle = document.getElementById('themeToggle');
+document.addEventListener("DOMContentLoaded", function () {
 
-// 页面加载时读取本地存储
-if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-mode');
-    toggle.textContent = "☀";
-} else {
-    toggle.textContent = "🌙";
-}
+    const toggle = document.getElementById('themeToggle');
 
-toggle.addEventListener('click', () => {
-    document.body.classList.toggle('light-mode');
-
-    if (document.body.classList.contains('light-mode')) {
+    // 读取本地存储
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
         toggle.textContent = "☀";
-        localStorage.setItem('theme', 'light');
     } else {
         toggle.textContent = "🌙";
-        localStorage.setItem('theme', 'dark');
     }
-});
-window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const progress = (scrollTop / docHeight) * 100;
-    document.getElementById('progressBar').style.width = progress + "%";
+
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+
+        if (document.body.classList.contains('light-mode')) {
+            toggle.textContent = "☀";
+            localStorage.setItem('theme', 'light');
+        } else {
+            toggle.textContent = "🌙";
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+    // 滚动进度条
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        document.getElementById('progressBar').style.width = progress + "%";
+    });
+
 });
 </script>
 </body>
