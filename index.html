@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>Fancy 的博客</title>
     <style>
+        * {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  font-family: "Segoe UI", sans-serif;
+}
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
@@ -152,14 +163,14 @@ footer {
   50% { opacity: 0 }
 }
         #progressBar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #ff8a00, #ffb347);
-    width: 0%;
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  z-index: 2000;
+  transition: width 0.1s ease-out;
 }
     transition: width 0.1s ease-out;
         html, body {
@@ -239,13 +250,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const progressBar = document.getElementById("progressBar");
 
 window.addEventListener("scroll", () => {
-  const scrollTop = document.documentElement.scrollTop;
+  const scrollTop = window.scrollY;
   const scrollHeight =
-    document.documentElement.scrollHeight -
-    document.documentElement.clientHeight;
+    document.documentElement.scrollHeight - window.innerHeight;
 
   const percent = (scrollTop / scrollHeight) * 100;
-
   progressBar.style.width = percent + "%";
 });
 </script>
