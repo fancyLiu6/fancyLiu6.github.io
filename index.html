@@ -39,10 +39,8 @@ nav a {
     text-decoration: none;
     margin: 0 15px;
     position: relative;
-    transition: 0.3s;
 }
 
-/* 导航下划线动画 */
 nav a::after {
     content: "";
     position: absolute;
@@ -58,20 +56,19 @@ nav a:hover::after {
     width: 100%;
 }
 
-.card {
-    background: white;
+.post {
+    background: rgba(255,255,255,0.95);
     padding: 20px;
     margin: 30px auto;
     width: 80%;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
 }
 
-/* 卡片悬浮动画 */
-.card:hover {
+.post:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
 }
 
 footer {
@@ -80,7 +77,7 @@ footer {
     text-align: center;
     padding: 20px;
 }
-    </style>
+</style>
 </head>
 <body>
 
