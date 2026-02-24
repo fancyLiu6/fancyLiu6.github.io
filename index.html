@@ -1,156 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>Fancy 的博客</title>
-    <style>
-        * {
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fancy 的博客</title>
+
+<style>
+
+/* ===== 全局 ===== */
+
+* {
   box-sizing: border-box;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+html {
   scroll-behavior: smooth;
-  font-family: "Segoe UI", sans-serif;
-}
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-                url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    animation: fadeIn 1s ease-in;
 }
 
-/* 页面渐入动画 */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "Helvetica Neue", sans-serif;
+
+  background: url("images/bg.jpg") center/cover no-repeat fixed;
+  color: #1d1d1f;
 }
+
+/* ===== Header ===== */
 
 header {
   text-align: center;
-  padding: 140px 20px 100px;
+  padding: 180px 20px 140px;
 
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.65),
-    rgba(0, 0, 0, 0.25)
+    rgba(255,255,255,0.65),
+    rgba(255,255,255,0.35)
   );
 
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(25px);
 }
+
+header h1 {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 15px;
+}
+
+header p {
+  font-size: 18px;
+  color: #3a3a3c;
+}
+
+/* ===== Apple 胶囊导航 ===== */
 
 nav {
   position: sticky;
-  top: 0;
-  padding: 16px 0;
+  top: 30px;
 
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(18px);
+  margin: 0 auto 80px auto;
+  width: fit-content;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 50px;
+  border-radius: 50px;
+
+  display: flex;
+  gap: 50px;
+
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(30px);
+
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
 
   z-index: 1000;
 }
 
 nav a {
-  color: white;
   text-decoration: none;
-  margin: 0 20px;
-  position: relative;
+  color: #1d1d1f;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.3s ease;
 }
 
-nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 0;
-  height: 2px;
-  background: #ff9800;
-  transition: 0.3s;
+nav a:hover {
+  opacity: 0.5;
 }
 
-nav a:hover::after {
-  width: 100%;
-}
+/* ===== 毛玻璃卡片 ===== */
 
 .post {
-  margin: 80px auto;
-  padding: 60px;
-  max-width: 900px;
+  margin: 0 auto 120px auto;
+  padding: 70px;
+  max-width: 800px;
 
-  border-radius: 28px;
+  border-radius: 32px;
 
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(22px);
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(40px);
 
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.9);
 
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.08);
 
   transition: 0.3s ease;
 }
 
 .post:hover {
-  transform: translateY(-6px);
+  transform: translateY(-5px);
 }
 
-footer {
-    background: rgba(0,0,0,0.8);
-    color: white;
-    text-align: center;
-    padding: 20px;
-}
-/* 滚动渐入动画 */
-.fade-in {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s ease;
+.post h2 {
+  margin-top: 0;
+  font-size: 28px;
 }
 
-.fade-in.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-       #themeToggle {
-    margin-top: 15px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    background: #ff9800;
-    color: white;
-    font-size: 16px;
-    transition: all 0.3s ease;
+.post p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #3a3a3c;
 }
 
-#themeToggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-}
-        .light-mode {
-    background: white !important;
-}
+/* ===== 打字动画 ===== */
 
-.light-mode .post {
-    background: rgba(0,0,0,0.05);
-    color: black;
-}
-        .typing {
+.typing {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
   position: relative;
-  letter-spacing: 2px;
-  font-weight: bold;
 
-  animation: typing 2.8s steps(12, end) forwards;
+  animation: typing 2.5s steps(12, end) forwards;
 }
 
 @keyframes typing {
@@ -161,133 +141,48 @@ footer {
 .typing::after {
   content: "";
   position: absolute;
-  right: -6px;
-  top: 10%;
+  right: -5px;
+  top: 15%;
   width: 2px;
-  height: 80%;
-  background: white;
+  height: 70%;
+  background: #1d1d1f;
   animation: blink 0.8s infinite;
 }
 
 @keyframes blink {
   50% { opacity: 0 }
 }
-        #progressBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  width: 0;
-  background: linear-gradient(90deg, #ff9800, #ff5722);
-  z-index: 2000;
-  transition: width 0.1s ease-out;
-}
-    transition: width 0.1s ease-out;
-        html, body {
-  overflow-x: hidden;
-}
-body.dark {
-  background: #0f0f0f;
-  color: white;
-}
 
-body.dark .post {
-  background: rgba(255,255,255,0.05);
-}
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-
-  background: radial-gradient(
-    circle at center,
-    transparent 55%,
-    rgba(0, 0, 0, 0.45)
-  );
-
-  pointer-events: none;
-}
 </style>
 </head>
+
 <body>
-<div id="progressBar"></div>
+
 <header>
-    <h1 class="typing">Fancy 的博客</h1>
-    <p>记录学习与成长 ✨</p>
-    <button id="themeToggle">🌙</button>
+  <h1 class="typing">Fancy 的博客</h1>
+  <p>记录学习与成长 ✨</p>
 </header>
 
 <nav>
-    <a href="#">首页</a>
-    <a href="#">关于我</a>
-    <a href="#">文章</a>
-    <a href="#">联系</a>
+  <a href="#">首页</a>
+  <a href="#">关于我</a>
+  <a href="#">文章</a>
+  <a href="#">联系</a>
 </nav>
 
-<div class="container">
-    <div class="post fade-in">
-        <h2>我的第一篇文章</h2>
-        <p>这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。</p>
-    </div>
+<section class="post">
+  <h2>我的第一篇文章</h2>
+  <p>
+    这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。
+  </p>
+</section>
 
-    <div class="post fade-in">
-        <h2>GitHub Pages 搭建记录</h2>
-        <p>今天成功把网站部署到了 GitHub Pages，非常开心！</p>
-    </div>
-</div>
+<section class="post">
+  <h2>第二篇文章</h2>
+  <p>
+    未来这里可以放更多文章内容，你可以扩展成真正的博客结构。
+  </p>
+</section>
 
-<footer>
-    © 2026 Fancy Blog | Powered by GitHub Pages
-</footer>
-<script>
-const elements = document.querySelectorAll('.fade-in');
-
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('show');
-        }
-    });
-});
-
-elements.forEach(el => observer.observe(el));
-</script>
-   <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const toggle = document.getElementById('themeToggle');
-
-    // 读取本地存储
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-mode');
-        toggle.textContent = "☀";
-    } else {
-        toggle.textContent = "🌙";
-    }
-
-    toggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-
-        if (document.body.classList.contains('light-mode')) {
-            toggle.textContent = "☀";
-            localStorage.setItem('theme', 'light');
-        } else {
-            toggle.textContent = "🌙";
-            localStorage.setItem('theme', 'dark');
-        }
-    });
-
-    // 滚动进度条
-    const progressBar = document.getElementById("progressBar");
-
-window.addEventListener("scroll", () => {
-  const scrollTop = window.scrollY;
-  const scrollHeight =
-    document.documentElement.scrollHeight - window.innerHeight;
-
-  const percent = (scrollTop / scrollHeight) * 100;
-  progressBar.style.width = percent + "%";
-});
-</script>
 </body>
 </html>
