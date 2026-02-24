@@ -57,13 +57,16 @@ nav a:hover::after {
 }
 
 .post {
-    background: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding: 20px;
     margin: 30px auto;
     width: 80%;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
     transition: all 0.3s ease;
+    color: white;
 }
 
 .post:hover {
@@ -77,6 +80,35 @@ footer {
     text-align: center;
     padding: 20px;
 }
+/* 滚动渐入动画 */
+.fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+}
+
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+        #themeToggle {
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    background: #ff9800;
+    color: white;
+    font-weight: bold;
+}
+        .light-mode {
+    background: white !important;
+}
+
+.light-mode .post {
+    background: rgba(0,0,0,0.05);
+    color: black;
+}
 </style>
 </head>
 <body>
@@ -84,6 +116,7 @@ footer {
 <header>
     <h1>Fancy 的博客</h1>
     <p>记录学习与成长 ✨</p>
+    <button id="themeToggle">🌙</button>
 </header>
 
 <nav>
@@ -94,12 +127,12 @@ footer {
 </nav>
 
 <div class="container">
-    <div class="post">
+    <div class="post fade-in">
         <h2>我的第一篇文章</h2>
         <p>这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。</p>
     </div>
 
-    <div class="post">
+    <div class="post fade-in">
         <h2>GitHub Pages 搭建记录</h2>
         <p>今天成功把网站部署到了 GitHub Pages，非常开心！</p>
     </div>
@@ -108,6 +141,25 @@ footer {
 <footer>
     © 2026 Fancy Blog | Powered by GitHub Pages
 </footer>
+<script>
+const elements = document.querySelectorAll('.fade-in');
 
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('show');
+        }
+    });
+});
+
+elements.forEach(el => observer.observe(el));
+</script>
+    <script>
+const toggle = document.getElementById('themeToggle');
+
+toggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+});
+</script>
 </body>
 </html>
