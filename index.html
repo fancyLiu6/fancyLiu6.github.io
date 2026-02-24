@@ -119,12 +119,37 @@ footer {
     background: rgba(0,0,0,0.05);
     color: black;
 }
+        .typing {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid white;
+    width: 0;
+    animation: typing 3s steps(20, end) forwards, blink 0.7s infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink {
+    50% { border-color: transparent }
+}
+        #progressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: orange;
+    width: 0%;
+    z-index: 2000;
+}
 </style>
 </head>
 <body>
-
+<div id="progressBar"></div>
 <header>
-    <h1>Fancy 的博客</h1>
+    <h1 class="typing">Fancy 的博客</h1>
     <p>记录学习与成长 ✨</p>
     <button id="themeToggle">🌙</button>
 </header>
@@ -185,6 +210,13 @@ toggle.addEventListener('click', () => {
         toggle.textContent = "🌙";
         localStorage.setItem('theme', 'dark');
     }
+});
+       <script>
+window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + "%";
 });
 </script>
 </body>
