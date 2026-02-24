@@ -120,20 +120,36 @@ footer {
     color: black;
 }
         .typing {
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 3px solid white;
-    width: 0;
-    animation: typing 3s steps(20, end) forwards, blink 0.7s infinite;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: bold;
+  letter-spacing: 2px;
+  animation: typing 3s steps(12) forwards;
+  position: relative;
 }
 
+/* 打字动画 */
 @keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
+  from { width: 0 }
+  to { width: 12ch }
 }
 
+/* 光标 */
+.typing::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: white;
+  animation: blink 0.8s infinite;
+}
+
+/* 光标闪烁 */
 @keyframes blink {
-    50% { border-color: transparent }
+  50% { opacity: 0 }
 }
         #progressBar {
     position: fixed;
