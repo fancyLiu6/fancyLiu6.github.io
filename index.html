@@ -269,10 +269,16 @@ body.dark .fullscreen-meta {
   border-radius: 12px;
   margin: 12px 0;
 }
-.close-fullscreen {
+/* 按钮组 */
+.fullscreen-actions {
   position: absolute;
   top: 20px;
   right: 20px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+.fullscreen-actions button {
   background: #0071e3;
   color: white;
   border: none;
@@ -281,16 +287,21 @@ body.dark .fullscreen-meta {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  z-index: 10;
 }
-.close-fullscreen:hover {
+.fullscreen-actions button:hover {
   background: #005bb5;
 }
-body.dark .close-fullscreen {
+body.dark .fullscreen-actions button {
   background: #0a84ff;
 }
-body.dark .close-fullscreen:hover {
+body.dark .fullscreen-actions button:hover {
   background: #0063ce;
+}
+.close-fullscreen {
+  background: rgba(0,0,0,0.6) !important;
+}
+.close-fullscreen:hover {
+  background: black !important;
 }
 @media (max-width: 800px) {
   .sidebar {
@@ -328,6 +339,10 @@ body.dark .close-fullscreen:hover {
   }
   .fullscreen-toc {
     display: none;
+  }
+  .fullscreen-actions {
+    top: 10px;
+    right: 10px;
   }
 }
 @media (min-width: 801px) {
@@ -383,7 +398,7 @@ body.dark .post .post-content code {
 body.dark .post-tag {
   background: rgba(255,255,255,0.1);
 }
-/* 其他原有样式保持不变 */
+/* 其他原有样式 */
 body.dark {
   background: #1c1c1e url("images/bg.jpg") center/cover no-repeat fixed;
   color: #ffffff;
@@ -873,7 +888,7 @@ nav a:hover, .nav-btn:hover {
   </div>
 </div>
 
-<!-- 全屏阅读模态框（带 TOC） -->
+<!-- 全屏阅读模态框（带 TOC 和编辑按钮） -->
 <div id="fullscreenModal" class="fullscreen-modal">
   <div class="fullscreen-content">
     <div class="fullscreen-main">
@@ -889,7 +904,10 @@ nav a:hover, .nav-btn:hover {
       <div style="font-weight:600; margin-bottom:12px;">📑 目录</div>
       <div id="tocContent"></div>
     </div>
-    <button class="close-fullscreen">关闭</button>
+    <div class="fullscreen-actions">
+      <button id="fullscreenEditBtn">✏️ 编辑</button>
+      <button class="close-fullscreen">关闭</button>
+    </div>
   </div>
 </div>
 </div>
@@ -932,7 +950,7 @@ nav a:hover, .nav-btn:hover {
     lines.forEach(line => {
       const match = line.match(/^(#{1,2})\s+(.*)$/);
       if (match) {
-        const level = match[1].length; // 1 or 2
+        const level = match[1].length;
         const title = match[2].trim();
         const id = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase();
         toc.push({ level, title, id });
@@ -941,7 +959,6 @@ nav a:hover, .nav-btn:hover {
     return toc;
   }
 
-  // 渲染 TOC 到侧边栏
   function renderToc(toc) {
     const container = document.getElementById('tocContent');
     if (!container) return;
@@ -956,7 +973,6 @@ nav a:hover, .nav-btn:hover {
     });
     html += '</ul>';
     container.innerHTML = html;
-    // 绑定点击滚动
     document.querySelectorAll('.toc-link').forEach(link => {
       link.addEventListener('click', (e) => {
         const id = link.getAttribute('data-id');
@@ -964,7 +980,6 @@ nav a:hover, .nav-btn:hover {
         if (target) {
           target.scrollIntoView({ behavior: 'smooth' });
         } else {
-          // 手动查找标题元素
           const headings = document.querySelectorAll('#fullscreenBody h1, #fullscreenBody h2');
           for (let h of headings) {
             if (h.textContent.trim() === link.textContent.trim()) {
@@ -977,7 +992,6 @@ nav a:hover, .nav-btn:hover {
     });
   }
 
-  // 语言检测（略作简化）
   function detectLanguage(text) {
     if (!text.trim()) return "未知";
     const lower = text.toLowerCase();
@@ -998,9 +1012,8 @@ nav a:hover, .nav-btn:hover {
   let currentPage = 1;
   const pageSize = 5;
   let currentSort = 'created_desc';
-  let currentTagFilter = null; // 当前选中的标签
+  let currentTagFilter = null;
 
-  // 预设文章（带标签）
   const defaultArticles = [
     { id: 1, title: "我的第一篇文章", content: "# 欢迎\n这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。\n\n- 支持 Markdown 语法\n- **粗体**、*斜体*\n- `代码片段`", date: "2025-04-01", views: 128, tags: ["生活", "杂谈"], createdAt: 1743494400000, updatedAt: 1743494400000 },
     { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，`dict2items` 可以方便遍历字典，结合 `loop` 使用。\n\n```yaml\n- name: 遍历字典\n  debug:\n    msg: \"{{ item.key }}: {{ item.value }}\"\n  loop: \"{{ my_dict | dict2items }}\"\n```", date: "2025-04-15", views: 86, tags: ["Ansible", "自动化"], createdAt: 1744704000000, updatedAt: 1744704000000 },
@@ -1056,7 +1069,6 @@ nav a:hover, .nav-btn:hover {
     else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt);
   }
 
-  // 获取所有标签及计数
   function getAllTags() {
     const tagMap = new Map();
     totalArticles.forEach(art => {
@@ -1069,7 +1081,6 @@ nav a:hover, .nav-btn:hover {
     return Array.from(tagMap.entries()).sort((a,b)=>b[1]-a[1]);
   }
 
-  // 渲染标签云
   function renderTagCloud() {
     const container = document.getElementById('tagList');
     if (!container) return;
@@ -1084,7 +1095,6 @@ nav a:hover, .nav-btn:hover {
       html += `<span class="tag ${activeClass}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)} (${count})</span>`;
     });
     container.innerHTML = html;
-    // 绑定点击过滤
     document.querySelectorAll('.tag').forEach(el => {
       el.addEventListener('click', (e) => {
         const tag = el.getAttribute('data-tag');
@@ -1093,7 +1103,7 @@ nav a:hover, .nav-btn:hover {
         } else {
           currentTagFilter = tag;
         }
-        renderTagCloud(); // 刷新高亮
+        renderTagCloud();
         currentPage = 1;
         renderArticles();
         renderSidebar();
@@ -1101,7 +1111,6 @@ nav a:hover, .nav-btn:hover {
     });
   }
 
-  // 清除标签过滤
   function clearTagFilter() {
     currentTagFilter = null;
     renderTagCloud();
@@ -1110,7 +1119,6 @@ nav a:hover, .nav-btn:hover {
     renderSidebar();
   }
 
-  // 侧边栏渲染（支持搜索和标签过滤）
   let currentSearchKeyword = '';
   function renderSidebar() {
     let filteredArticles = totalArticles;
@@ -1167,15 +1175,16 @@ nav a:hover, .nav-btn:hover {
     });
   }
 
-  // 全屏显示文章（带 TOC）
+  // 全屏显示文章
+  let currentFullscreenArticleId = null;
   function showFullscreenArticle(article) {
+    currentFullscreenArticleId = article.id;
     document.getElementById('fullscreenTitle').innerText = article.title;
     document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`;
     document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`;
     const tagsHtml = article.tags && article.tags.length ? `🏷️ ${article.tags.join(', ')}` : '';
     document.getElementById('fullscreenTags').innerHTML = tagsHtml;
     const renderedHtml = renderMarkdown(article.content);
-    // 为标题添加锚点id以便TOC跳转
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = renderedHtml;
     const headings = tempDiv.querySelectorAll('h1, h2');
@@ -1185,24 +1194,30 @@ nav a:hover, .nav-btn:hover {
       h.id = `toc-${id}`;
     });
     document.getElementById('fullscreenBody').innerHTML = tempDiv.innerHTML;
-    // 生成TOC
     const toc = extractTOC(article.content);
     renderToc(toc);
     document.getElementById('fullscreenModal').style.display = 'flex';
-    // 代码高亮
     document.querySelectorAll('#fullscreenBody pre code').forEach(block => {
       hljs.highlightElement(block);
     });
   }
+
   function closeFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
-  // 文章列表渲染
+  // 编辑文章：关闭全屏，打开编辑模态框
+  function editCurrentArticle() {
+    if (currentFullscreenArticleId !== null) {
+      closeFullscreen();
+      openEditModal(currentFullscreenArticleId);
+    }
+  }
+
   function renderArticles() {
     let filtered = [...totalArticles];
     if (currentTagFilter) {
       filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter));
     }
-    sortArticles(); // 对 totalArticles 排序，但过滤后需要单独排序
+    sortArticles();
     filtered.sort((a,b) => {
       if (currentSort === 'created_desc') return b.createdAt - a.createdAt;
       if (currentSort === 'created_asc') return a.createdAt - b.createdAt;
@@ -1267,7 +1282,6 @@ nav a:hover, .nav-btn:hover {
       const id = parseInt(el.dataset.id);
       incrementView(id);
     }));
-    // 高亮代码块
     document.querySelectorAll('.post-content pre code').forEach(block => {
       hljs.highlightElement(block);
     });
@@ -1381,7 +1395,6 @@ nav a:hover, .nav-btn:hover {
   }
   function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
-  // 图片插入（Markdown）
   function insertImageAtCursor() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1432,9 +1445,8 @@ nav a:hover, .nav-btn:hover {
     }
   }
 
-  // 后端同步（可选）
   const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
-  async function syncToBackend(action,article){ /* 同之前 */ }
+  async function syncToBackend(action,article){ /* 模拟同步，可忽略 */ }
   function notifyBackend(action,article){ /* 忽略 */ }
 
   function setupNavigation(){
@@ -1502,11 +1514,14 @@ nav a:hover, .nav-btn:hover {
     contentTextarea.addEventListener('paste', handleImagePaste);
     document.getElementById('sortSelect').value = currentSort;
     document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
+    document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter);
+    // 全屏阅读中的编辑按钮
+    const fullscreenEditBtn = document.getElementById('fullscreenEditBtn');
+    if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle);
     const closeFullscreenBtn = document.querySelector('.close-fullscreen');
     if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen);
     document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); });
     document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor);
-    document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter);
     initSearch();
     initMobileSidebar();
   }
