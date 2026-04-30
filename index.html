@@ -710,10 +710,10 @@ nav a:hover, .nav-btn:hover {
     <label>标题</label>
     <input type="text" id="editTitle" placeholder="标题">
     <label>内容</label>
-    <textarea id="editContent" placeholder="文章内容（支持 HTML，可直接插入图片标签）"></textarea>
+    <textarea id="editContent" placeholder="文章内容（支持 HTML，可直接粘贴图片）"></textarea>
     <div style="margin-bottom: 10px;">
       <button type="button" id="insertImageBtn" class="image-upload-btn">🖼️ 插入图片</button>
-      <span style="font-size:12px; margin-left:10px;">点击后选择图片，将自动插入到光标位置</span>
+      <span style="font-size:12px; margin-left:10px;">点击按钮选择图片，或直接 Ctrl+V 粘贴截图</span>
     </div>
     <div id="languageHint" class="language-detection"></div>
     <label>日期</label>
@@ -849,7 +849,6 @@ nav a:hover, .nav-btn:hover {
       html += `<li><a data-id="${art.id}" class="nav-link">${escapeHtml(art.title)}</a></li>`;
     }
     container.innerHTML = html;
-    // 绑定点击跳转
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
         const id = parseInt(link.getAttribute('data-id'));
@@ -953,7 +952,7 @@ nav a:hover, .nav-btn:hover {
       incrementView(id);
     }));
     renderPagination();
-    renderSidebar(); // 刷新侧边栏（可能因排序改变)
+    renderSidebar();
   }
 
   function renderPagination() {
@@ -1054,7 +1053,7 @@ nav a:hover, .nav-btn:hover {
   }
   function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
-  // 图片上传与插入
+  // 图片上传与插入（按钮）
   function insertImageAtCursor() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1078,6 +1077,33 @@ nav a:hover, .nav-btn:hover {
       reader.readAsDataURL(file);
     };
     input.click();
+  }
+
+  // 处理粘贴图片（Ctrl+V 截图）
+  function handleImagePaste(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const base64 = ev.target.result;
+          const imgTag = `<img src="${base64}" alt="pasted image" style="max-width:100%; border-radius:12px; margin:10px 0;">`;
+          const textarea = document.getElementById('editContent');
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const content = textarea.value;
+          const newContent = content.substring(0, start) + imgTag + content.substring(end);
+          textarea.value = newContent;
+          textarea.dispatchEvent(new Event('input'));
+          updateLanguageHint(newContent);
+        };
+        reader.readAsDataURL(file);
+        break;
+      }
+    }
   }
 
   // 后端模拟同步（可选）
@@ -1146,6 +1172,7 @@ nav a:hover, .nav-btn:hover {
     document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); });
     const contentTextarea = document.getElementById('editContent');
     contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value));
+    contentTextarea.addEventListener('paste', handleImagePaste);   // 粘贴图片
     document.getElementById('sortSelect').value = currentSort;
     document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
     document.querySelector('.close-fullscreen')?.addEventListener('click', closeFullscreen);
