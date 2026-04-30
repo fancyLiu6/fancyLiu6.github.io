@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-SRE学习仓库 | Fancy 的博客</title>
+<!-- GitHub 风格图标 (SVG) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d1d1f'/%3E%3Cpath fill='%23ffffff' d='M32 16c-8.8 0-16 7.2-16 16 0 7.1 4.6 13.1 10.9 15.2.8.1 1.1-.3 1.1-.8 0-.4 0-1.4-.1-2.8-4.4 1-5.3-2.1-5.3-2.1-.7-1.8-1.8-2.3-1.8-2.3-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.4 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.3-3.6-.4-7.4-1.8-7.4-8 0-1.8.6-3.2 1.7-4.4-.2-.4-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.4 3.8.2 4.2 1 1.2 1.7 2.6 1.7 4.4 0 6.2-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3 0 2.2-.1 3.9-.1 4.4 0 .4.3.9 1.1.8C43.4 45.1 48 39.1 48 32c0-8.8-7.2-16-16-16z'/%3E%3C/svg%3E">
 <style>
-/* ========== 样式（保持原有风格，新增统计卡片样式） ========== */
+/* ========== 全局样式 ========== */
 * {
   box-sizing: border-box;
 }
@@ -76,7 +78,6 @@ header p {
 body.dark header p {
   color: #ccc;
 }
-/* 统计卡片 */
 .stats-card {
   max-width: 800px;
   margin: 20px auto 0;
@@ -430,8 +431,7 @@ body.dark .page-btn.active {
   <p>记录学习与成长 ✨</p>
 </header>
 
-<!-- 统计卡片 -->
-<div class="stats-card" id="statsCard">
+<div class="stats-card">
   <div class="stat-item"><span class="stat-label">📄 总文章数</span><span class="stat-number" id="totalArticlesCount">0</span></div>
   <div class="stat-item"><span class="stat-label">📝 总字数</span><span class="stat-number" id="totalWordsCount">0</span></div>
 </div>
@@ -493,7 +493,6 @@ body.dark .page-btn.active {
   const pageSize = 5;
   let currentSort = 'created_desc';
 
-  // 预设文章（带 createdAt/updatedAt）
   const defaultArticles = [
     { id: 1, title: "我的第一篇文章", content: "这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。", date: "2025-04-01", views: 128, createdAt: 1743494400000, updatedAt: 1743494400000 },
     { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，dict2items可以方便遍历字典，结合loop使用。", date: "2025-04-15", views: 86, createdAt: 1744704000000, updatedAt: 1744704000000 },
@@ -507,24 +506,18 @@ body.dark .page-btn.active {
     { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, createdAt: 1745884800000, updatedAt: 1745884800000 }
   ];
 
-  // ---------- 辅助函数：计算文章字数（去除空格和标点？简单统计有效字符）----------
   function countWords(text) {
-    // 剔除空格、换行后统计字符数（中英文混合均算一个字符）
     return text.replace(/\s+/g, '').length;
   }
 
-  // 更新统计面板
   function updateStats() {
     const totalCount = totalArticles.length;
     let totalWords = 0;
-    totalArticles.forEach(art => {
-      totalWords += countWords(art.content);
-    });
+    totalArticles.forEach(art => { totalWords += countWords(art.content); });
     document.getElementById('totalArticlesCount').innerText = totalCount;
     document.getElementById('totalWordsCount').innerText = totalWords;
   }
 
-  // ---------- localStorage 操作 ----------
   function loadDataFromStorage() {
     const stored = localStorage.getItem('blog_articles');
     if (stored) {
@@ -536,7 +529,6 @@ body.dark .page-btn.active {
         if (!existIds.has(art.id)) totalArticles.push(art);
       }
     }
-    // 补全缺失字段
     let needSave = false;
     totalArticles = totalArticles.map(art => {
       let updated = art;
@@ -565,34 +557,26 @@ body.dark .page-btn.active {
     updateStats();
   }
 
-  // ---------- 排序 ----------
   function sortArticles() {
-    if (currentSort === 'created_desc') {
-      totalArticles.sort((a, b) => b.createdAt - a.createdAt);
-    } else if (currentSort === 'created_asc') {
-      totalArticles.sort((a, b) => a.createdAt - b.createdAt);
-    } else if (currentSort === 'updated_desc') {
-      totalArticles.sort((a, b) => b.updatedAt - a.updatedAt);
-    }
+    if (currentSort === 'created_desc') totalArticles.sort((a,b)=>b.createdAt - a.createdAt);
+    else if (currentSort === 'created_asc') totalArticles.sort((a,b)=>a.createdAt - b.createdAt);
+    else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt);
   }
 
-  // ---------- 渲染当前页 ----------
   function renderArticles() {
     sortArticles();
-    const start = (currentPage - 1) * pageSize;
-    const pageArticles = totalArticles.slice(start, start + pageSize);
+    const start = (currentPage-1)*pageSize;
+    const pageArticles = totalArticles.slice(start, start+pageSize);
     const container = document.getElementById('postsContainer');
     if (!container) return;
-    if (totalArticles.length === 0) {
+    if (totalArticles.length===0) {
       container.innerHTML = '<div style="text-align:center; padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>';
       document.getElementById('paginationContainer').innerHTML = '';
-      updateStats();
       return;
     }
-
     let html = '';
     for (let art of pageArticles) {
-      const wordCount = countWords(art.content);
+      const wc = countWords(art.content);
       html += `
         <section class="post">
           <h2>${escapeHtml(art.title)}</h2>
@@ -601,7 +585,7 @@ body.dark .page-btn.active {
             <div class="meta-left">
               <span>📅 ${art.date}</span>
               <span class="read-count" data-id="${art.id}">👀 ${art.views} 次阅读</span>
-              <span>📝 ${wordCount} 字</span>
+              <span>📝 ${wc} 字</span>
             </div>
             <div class="post-actions">
               <button class="edit-btn" data-id="${art.id}">✏️ 编辑</button>
@@ -612,134 +596,84 @@ body.dark .page-btn.active {
       `;
     }
     container.innerHTML = html;
-
-    // 绑定事件
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(btn.getAttribute('data-id'));
-        openEditModal(id);
-      });
-    });
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(btn.getAttribute('data-id'));
-        deleteArticle(id);
-      });
-    });
-    document.querySelectorAll('.read-count').forEach(el => {
-      el.addEventListener('click', (e) => {
-        const id = parseInt(el.getAttribute('data-id'));
-        incrementView(id);
-      });
-    });
-
+    document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',()=>openEditModal(parseInt(btn.dataset.id))));
+    document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',()=>deleteArticle(parseInt(btn.dataset.id))));
+    document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',()=>incrementView(parseInt(el.dataset.id))));
     renderPagination();
   }
 
-  // 分页控件
   function renderPagination() {
-    const totalPages = Math.ceil(totalArticles.length / pageSize);
+    const totalPages = Math.ceil(totalArticles.length/pageSize);
     const container = document.getElementById('paginationContainer');
-    if (totalPages <= 1) {
-      container.innerHTML = '';
-      return;
-    }
+    if (totalPages<=1) { container.innerHTML = ''; return; }
     let html = '';
-    if (currentPage > 1) {
-      html += `<button class="page-btn" data-page="${currentPage - 1}">← 上一页</button>`;
-    }
-    for (let i = 1; i <= totalPages; i++) {
-      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
-    }
-    if (currentPage < totalPages) {
-      html += `<button class="page-btn" data-page="${currentPage + 1}">下一页 →</button>`;
-    }
+    if (currentPage>1) html += `<button class="page-btn" data-page="${currentPage-1}">← 上一页</button>`;
+    for (let i=1;i<=totalPages;i++) html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`;
+    if (currentPage<totalPages) html += `<button class="page-btn" data-page="${currentPage+1}">下一页 →</button>`;
     container.innerHTML = html;
-    container.querySelectorAll('.page-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const page = parseInt(btn.getAttribute('data-page'));
-        if (!isNaN(page) && page !== currentPage) {
-          currentPage = page;
-          renderArticles();
-          document.getElementById('postsContainer').scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
+    container.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{
+      const page = parseInt(btn.dataset.page);
+      if (!isNaN(page) && page!==currentPage) { currentPage=page; renderArticles(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'}); }
+    }));
   }
 
   function adjustPageAfterDataChange() {
-    const totalPages = Math.ceil(totalArticles.length / pageSize);
-    if (totalPages === 0) currentPage = 1;
-    else if (currentPage > totalPages) currentPage = totalPages;
+    const totalPages = Math.ceil(totalArticles.length/pageSize);
+    if (totalPages===0) currentPage=1;
+    else if (currentPage>totalPages) currentPage=totalPages;
   }
 
-  // ---------- CRUD ----------
-  function generateNewId() {
-    const maxId = totalArticles.length > 0 ? Math.max(...totalArticles.map(a => a.id)) : 0;
-    return maxId + 1;
-  }
+  function generateNewId() { return totalArticles.length>0?Math.max(...totalArticles.map(a=>a.id))+1:1; }
 
-  function createArticle(title, content, date) {
+  function createArticle(title,content,date){
     const now = Date.now();
     const newId = generateNewId();
-    const newArticle = {
-      id: newId,
-      title, content,
-      date: date || new Date().toISOString().slice(0,10),
-      views: 0,
-      createdAt: now,
-      updatedAt: now
-    };
+    const newArticle = { id:newId, title, content, date:date||new Date().toISOString().slice(0,10), views:0, createdAt:now, updatedAt:now };
     totalArticles.push(newArticle);
     sortArticles();
     adjustPageAfterDataChange();
     renderArticles();
     saveArticlesToStorage();
-    notifyBackend('create', newArticle);
+    notifyBackend('create',newArticle);
   }
 
-  function updateArticle(id, title, content, date) {
-    const index = totalArticles.findIndex(a => a.id === id);
-    if (index !== -1) {
-      totalArticles[index].title = title;
-      totalArticles[index].content = content;
-      totalArticles[index].date = date;
-      totalArticles[index].updatedAt = Date.now();
+  function updateArticle(id,title,content,date){
+    const idx = totalArticles.findIndex(a=>a.id===id);
+    if(idx!==-1){
+      totalArticles[idx].title=title;
+      totalArticles[idx].content=content;
+      totalArticles[idx].date=date;
+      totalArticles[idx].updatedAt=Date.now();
       saveArticlesToStorage();
-      notifyBackend('update', totalArticles[index]);
+      notifyBackend('update',totalArticles[idx]);
       sortArticles();
       renderArticles();
     }
   }
 
-  function deleteArticle(id) {
-    if (!confirm("确定要删除这篇文章吗？")) return;
-    const article = totalArticles.find(a => a.id === id);
-    if (!article) return;
-    totalArticles = totalArticles.filter(a => a.id !== id);
+  function deleteArticle(id){
+    if(!confirm("确定要删除吗？")) return;
+    const article = totalArticles.find(a=>a.id===id);
+    if(!article) return;
+    totalArticles = totalArticles.filter(a=>a.id!==id);
     saveArticlesToStorage();
-    notifyBackend('delete', article);
+    notifyBackend('delete',article);
     adjustPageAfterDataChange();
     renderArticles();
   }
 
-  function incrementView(articleId) {
-    const article = totalArticles.find(a => a.id === articleId);
-    if (article) {
-      article.views += 1;
-      saveArticlesToStorage();
-      renderArticles();
-    }
+  function incrementView(id){
+    const article = totalArticles.find(a=>a.id===id);
+    if(article){ article.views++; saveArticlesToStorage(); renderArticles(); }
   }
 
-  // ---------- 模态框 ----------
   let editingId = null;
-  function openEditModal(id = null) {
+  function openEditModal(id=null){
     editingId = id;
     const modal = document.getElementById('editModal');
     const modalTitle = document.getElementById('modalTitle');
     const deleteBtn = document.getElementById('deleteArticleBtn');
-    if (id === null) {
+    if(id===null){
       modalTitle.innerText = '新建文章';
       deleteBtn.style.display = 'none';
       document.getElementById('editTitle').value = '';
@@ -748,8 +682,8 @@ body.dark .page-btn.active {
     } else {
       modalTitle.innerText = '编辑文章';
       deleteBtn.style.display = 'block';
-      const article = totalArticles.find(a => a.id === id);
-      if (article) {
+      const article = totalArticles.find(a=>a.id===id);
+      if(article){
         document.getElementById('editTitle').value = article.title;
         document.getElementById('editContent').value = article.content;
         document.getElementById('editDate').value = article.date;
@@ -757,137 +691,79 @@ body.dark .page-btn.active {
     }
     modal.style.display = 'flex';
   }
-  function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-    editingId = null;
-  }
-  function saveEdit() {
+  function closeEditModal(){ document.getElementById('editModal').style.display='none'; editingId=null; }
+  function saveEdit(){
     const title = document.getElementById('editTitle').value.trim();
     const content = document.getElementById('editContent').value.trim();
     const date = document.getElementById('editDate').value;
-    if (!title || !content) {
-      alert('标题和内容不能为空');
-      return;
-    }
-    if (editingId === null) {
-      createArticle(title, content, date);
-    } else {
-      updateArticle(editingId, title, content, date);
-    }
+    if(!title||!content){ alert('标题和内容不能为空'); return; }
+    if(editingId===null) createArticle(title,content,date);
+    else updateArticle(editingId,title,content,date);
     closeEditModal();
   }
-  function handleDeleteFromModal() {
-    if (editingId !== null) {
-      deleteArticle(editingId);
-      closeEditModal();
-    }
-  }
+  function handleDeleteFromModal(){ if(editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
-  // ---------- 后端模拟同步（与之前相同）----------
   const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
-  async function syncToBackend(action, article) {
+  async function syncToBackend(action,article){
     let url = API_BASE;
     let options = {};
-    switch (action) {
-      case 'create':
-        options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: article.title, body: article.content, userId: 1 }) };
-        break;
-      case 'update':
-        options = { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: article.id, title: article.title, body: article.content }) };
-        url += `/${article.id}`;
-        break;
-      case 'delete':
-        options = { method: 'DELETE' };
-        url += `/${article.id}`;
-        break;
+    switch(action){
+      case 'create': options={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:article.title,body:article.content,userId:1})}; break;
+      case 'update': options={method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:article.id,title:article.title,body:article.content})}; url+=`/${article.id}`; break;
+      case 'delete': options={method:'DELETE'}; url+=`/${article.id}`; break;
       default: return;
     }
-    try {
-      const response = await fetch(url, options);
-      const data = await response.json();
-      console.log(`[后端同步] ${action} 成功:`, data);
-    } catch (err) {
-      console.error(`[后端同步] ${action} 失败:`, err);
-    }
+    try{ const resp=await fetch(url,options); const data=await resp.json(); console.log(`[后端同步] ${action} 成功:`,data); } catch(err){ console.error(`[后端同步] ${action} 失败:`,err); }
   }
-  function notifyBackend(action, article) {
-    if (action !== 'create' && action !== 'update' && action !== 'delete') return;
-    syncToBackend(action, article);
+  function notifyBackend(action,article){ if(['create','update','delete'].includes(action)) syncToBackend(action,article); }
+
+  function setupNavigation(){
+    document.getElementById('navHome').addEventListener('click',(e)=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('navAbout').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'});});
+    document.getElementById('navArticles').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'});});
+    document.getElementById('navContact').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('contact').scrollIntoView({behavior:'smooth'});});
   }
 
-  // ---------- 导航、暗色模式、返回顶部 ----------
-  function setupNavigation() {
-    document.getElementById('navHome').addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    document.getElementById('navAbout').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('about').scrollIntoView({ behavior: 'smooth' }); });
-    document.getElementById('navArticles').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({ behavior: 'smooth' }); });
-    document.getElementById('navContact').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); });
+  function initDarkMode(){
+    const dark = localStorage.getItem('darkMode')==='true';
+    if(dark){ document.body.classList.add('dark'); document.getElementById('themeToggle').innerHTML='☀️ 亮色'; }
+    else{ document.body.classList.remove('dark'); document.getElementById('themeToggle').innerHTML='🌙 暗色'; }
   }
-
-  function initDarkMode() {
-    const darkMode = localStorage.getItem('darkMode') === 'true';
-    if (darkMode) {
-      document.body.classList.add('dark');
-      document.getElementById('themeToggle').innerHTML = '☀️ 亮色';
-    } else {
+  function toggleDarkMode(){
+    if(document.body.classList.contains('dark')){
       document.body.classList.remove('dark');
-      document.getElementById('themeToggle').innerHTML = '🌙 暗色';
-    }
-  }
-  function toggleDarkMode() {
-    if (document.body.classList.contains('dark')) {
-      document.body.classList.remove('dark');
-      localStorage.setItem('darkMode', 'false');
-      document.getElementById('themeToggle').innerHTML = '🌙 暗色';
+      localStorage.setItem('darkMode','false');
+      document.getElementById('themeToggle').innerHTML='🌙 暗色';
     } else {
       document.body.classList.add('dark');
-      localStorage.setItem('darkMode', 'true');
-      document.getElementById('themeToggle').innerHTML = '☀️ 亮色';
+      localStorage.setItem('darkMode','true');
+      document.getElementById('themeToggle').innerHTML='☀️ 亮色';
     }
   }
 
-  function handleScroll() {
-    const btn = document.getElementById('backToTop');
-    if (window.scrollY > 300) btn.style.display = 'flex';
-    else btn.style.display = 'none';
-  }
-  function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function handleScroll(){ const btn=document.getElementById('backToTop'); if(window.scrollY>300) btn.style.display='flex'; else btn.style.display='none'; }
+  function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
+  function escapeHtml(str){ return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+  function changeSort(value){ currentSort=value; currentPage=1; sortArticles(); renderArticles(); }
 
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
-  }
-
-  function changeSort(value) {
-    currentSort = value;
-    currentPage = 1;
-    sortArticles();
-    renderArticles();
-  }
-
-  function init() {
+  function init(){
     loadDataFromStorage();
     sortArticles();
     adjustPageAfterDataChange();
     renderArticles();
     initDarkMode();
     setupNavigation();
-    window.addEventListener('scroll', handleScroll);
-    document.getElementById('backToTop').addEventListener('click', scrollToTop);
-    document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
-    document.getElementById('newPostBtn').addEventListener('click', () => openEditModal(null));
-    document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
-    document.getElementById('saveEditBtn').addEventListener('click', saveEdit);
-    document.getElementById('deleteArticleBtn').addEventListener('click', handleDeleteFromModal);
-    document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) closeEditModal(); });
-    const sortSelect = document.getElementById('sortSelect');
-    sortSelect.value = currentSort;
-    sortSelect.addEventListener('change', (e) => changeSort(e.target.value));
+    window.addEventListener('scroll',handleScroll);
+    document.getElementById('backToTop').addEventListener('click',scrollToTop);
+    document.getElementById('themeToggle').addEventListener('click',toggleDarkMode);
+    document.getElementById('newPostBtn').addEventListener('click',()=>openEditModal(null));
+    document.getElementById('cancelEditBtn').addEventListener('click',closeEditModal);
+    document.getElementById('saveEditBtn').addEventListener('click',saveEdit);
+    document.getElementById('deleteArticleBtn').addEventListener('click',handleDeleteFromModal);
+    document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); });
+    document.getElementById('sortSelect').value=currentSort;
+    document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
   }
-
   init();
 </script>
 </body>
