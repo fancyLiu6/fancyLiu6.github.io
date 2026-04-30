@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-SRE学习仓库 | Fancy 的博客</title>
 <style>
-/* ========== 样式（与原保持一致，仅增加排序控件样式） ========== */
+/* ========== 样式（与原保持一致，并新增分页控件样式） ========== */
 * {
   box-sizing: border-box;
 }
@@ -227,26 +227,37 @@ body.dark .post-actions button {
 body.dark .info-card p {
   color: #e5e5ea;
 }
-.load-more {
-  display: block;
-  margin: 20px auto 60px auto;
-  padding: 12px 32px;
-  background: rgba(255,255,255,0.9);
+/* 分页控件 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px auto 60px;
+  flex-wrap: wrap;
+}
+.page-btn {
+  background: rgba(0,0,0,0.05);
   border: none;
-  border-radius: 40px;
-  font-size: 16px;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  backdrop-filter: blur(10px);
   transition: 0.2s;
 }
-.load-more:hover {
-  transform: scale(1.02);
-  background: white;
-}
-body.dark .load-more {
-  background: rgba(100,100,110,0.8);
+.page-btn.active {
+  background: #0071e3;
   color: white;
+}
+.page-btn:hover:not(.active) {
+  background: rgba(0,0,0,0.15);
+}
+body.dark .page-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+body.dark .page-btn.active {
+  background: #0071e3;
 }
 #backToTop {
   position: fixed;
@@ -397,7 +408,9 @@ body.dark .load-more {
 </nav>
 
 <div id="postsContainer"></div>
-<button id="loadMoreBtn" class="load-more">加载更多</button>
+
+<!-- 分页控件容器 -->
+<div id="paginationContainer" class="pagination"></div>
 
 <div id="about" class="info-card">
   <h2>📖 关于我</h2>
@@ -435,8 +448,9 @@ body.dark .load-more {
 <script>
   // ---------- 文章数据 ----------
   let totalArticles = [];
-  let visibleCount = 3;      // 当前显示的文章数量（每次加载更多增加3）
-  const step = 3;
+  let currentPage = 1;
+  const pageSize = 5;           // 每页显示5篇文章
+  let currentSort = 'created_desc'; // 排序方式
 
   // 预设初始文章（带 createdAt 和 updatedAt）
   const defaultArticles = [
@@ -464,7 +478,7 @@ body.dark .load-more {
         if (!existIds.has(art.id)) totalArticles.push(art);
       }
     }
-    // 补全缺失字段（兼容旧数据）
+    // 补全缺失字段
     let needSave = false;
     totalArticles = totalArticles.map(art => {
       let updated = art;
@@ -492,7 +506,6 @@ body.dark .load-more {
   }
 
   // ---------- 排序函数 ----------
-  let currentSort = 'created_desc'; // 默认按新建时间新→旧
   function sortArticles() {
     if (currentSort === 'created_desc') {
       totalArticles.sort((a, b) => b.createdAt - a.createdAt);
@@ -503,21 +516,21 @@ body.dark .load-more {
     }
   }
 
-  // ---------- 渲染可见文章（基于 visibleCount）----------
+  // ---------- 渲染当前页文章 ----------
   function renderArticles() {
-    // 先排序
     sortArticles();
-    const visibleArticles = totalArticles.slice(0, visibleCount);
+    const start = (currentPage - 1) * pageSize;
+    const pageArticles = totalArticles.slice(start, start + pageSize);
     const container = document.getElementById('postsContainer');
     if (!container) return;
     if (totalArticles.length === 0) {
       container.innerHTML = '<div style="text-align:center; padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>';
-      document.getElementById('loadMoreBtn').style.display = 'none';
+      document.getElementById('paginationContainer').innerHTML = '';
       return;
     }
 
     let html = '';
-    for (let art of visibleArticles) {
+    for (let art of pageArticles) {
       html += `
         <section class="post">
           <h2>${escapeHtml(art.title)}</h2>
@@ -557,25 +570,53 @@ body.dark .load-more {
       });
     });
 
-    // 处理“加载更多”按钮显示
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    if (visibleCount >= totalArticles.length) {
-      loadMoreBtn.style.display = 'none';
-    } else {
-      loadMoreBtn.style.display = 'block';
+    // 渲染分页控件
+    renderPagination();
+  }
+
+  // ---------- 分页控件 ----------
+  function renderPagination() {
+    const totalPages = Math.ceil(totalArticles.length / pageSize);
+    const container = document.getElementById('paginationContainer');
+    if (totalPages <= 1) {
+      container.innerHTML = '';
+      return;
     }
+
+    let html = '';
+    // 上一页
+    if (currentPage > 1) {
+      html += `<button class="page-btn" data-page="${currentPage - 1}">← 上一页</button>`;
+    }
+    // 页码按钮
+    for (let i = 1; i <= totalPages; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    // 下一页
+    if (currentPage < totalPages) {
+      html += `<button class="page-btn" data-page="${currentPage + 1}">下一页 →</button>`;
+    }
+    container.innerHTML = html;
+
+    // 绑定页码点击事件
+    container.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const page = parseInt(btn.getAttribute('data-page'));
+        if (!isNaN(page) && page !== currentPage) {
+          currentPage = page;
+          renderArticles();
+          // 滚动到文章列表顶部
+          document.getElementById('postsContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
   }
 
-  function loadMore() {
-    visibleCount += step;
-    renderArticles();
-  }
-
-  // 当排序改变时，重置 visibleCount 并重新渲染
-  function changeSort(value) {
-    currentSort = value;
-    visibleCount = step;   // 重置为初始显示数量
-    renderArticles();
+  // 当数据变更时重新计算当前页（如果当前页超出总页数则调整）
+  function adjustPageAfterDataChange() {
+    const totalPages = Math.ceil(totalArticles.length / pageSize);
+    if (totalPages === 0) currentPage = 1;
+    else if (currentPage > totalPages) currentPage = totalPages;
   }
 
   // ---------- 后端模拟同步（可选）----------
@@ -628,9 +669,8 @@ body.dark .load-more {
       updatedAt: now
     };
     totalArticles.push(newArticle);
-    // 排序并重新渲染
     sortArticles();
-    visibleCount = step;
+    adjustPageAfterDataChange();
     renderArticles();
     saveArticlesToStorage();
     notifyBackend('create', newArticle);
@@ -642,10 +682,9 @@ body.dark .load-more {
       totalArticles[index].title = title;
       totalArticles[index].content = content;
       totalArticles[index].date = date;
-      totalArticles[index].updatedAt = Date.now();   // 更新编辑时间
+      totalArticles[index].updatedAt = Date.now();
       saveArticlesToStorage();
       notifyBackend('update', totalArticles[index]);
-      // 重新排序（基于当前排序规则）
       sortArticles();
       renderArticles();
     }
@@ -658,7 +697,7 @@ body.dark .load-more {
     totalArticles = totalArticles.filter(a => a.id !== id);
     saveArticlesToStorage();
     notifyBackend('delete', article);
-    if (visibleCount > totalArticles.length) visibleCount = totalArticles.length;
+    adjustPageAfterDataChange();
     renderArticles();
   }
 
@@ -667,7 +706,7 @@ body.dark .load-more {
     if (article) {
       article.views += 1;
       saveArticlesToStorage();
-      renderArticles();  // 重新渲染以更新阅读数
+      renderArticles();
     }
   }
 
@@ -771,18 +810,23 @@ body.dark .load-more {
     });
   }
 
+  // ---------- 排序切换（重置到第一页）----------
+  function changeSort(value) {
+    currentSort = value;
+    currentPage = 1;
+    sortArticles();
+    renderArticles();
+  }
+
   // ---------- 初始化 ----------
   function init() {
     loadDataFromStorage();
-    // 初始排序（默认新到旧）
-    currentSort = 'created_desc';
     sortArticles();
-    visibleCount = step;
+    adjustPageAfterDataChange();
     renderArticles();
     initDarkMode();
     setupNavigation();
     window.addEventListener('scroll', handleScroll);
-    document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
     document.getElementById('backToTop').addEventListener('click', scrollToTop);
     document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
     document.getElementById('newPostBtn').addEventListener('click', () => openEditModal(null));
@@ -790,7 +834,7 @@ body.dark .load-more {
     document.getElementById('saveEditBtn').addEventListener('click', saveEdit);
     document.getElementById('deleteArticleBtn').addEventListener('click', handleDeleteFromModal);
     document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) closeEditModal(); });
-    // 排序下拉框事件
+    // 排序下拉框
     const sortSelect = document.getElementById('sortSelect');
     sortSelect.value = currentSort;
     sortSelect.addEventListener('change', (e) => changeSort(e.target.value));
