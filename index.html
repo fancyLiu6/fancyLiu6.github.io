@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-SRE学习仓库 | Fancy 的博客</title>
+<!-- GitHub 风格图标 -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d1d1f'/%3E%3Cpath fill='%23ffffff' d='M32 16c-8.8 0-16 7.2-16 16 0 7.1 4.6 13.1 10.9 15.2.8.1 1.1-.3 1.1-.8 0-.4 0-1.4-.1-2.8-4.4 1-5.3-2.1-5.3-2.1-.7-1.8-1.8-2.3-1.8-2.3-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.4 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.3-3.6-.4-7.4-1.8-7.4-8 0-1.8.6-3.2 1.7-4.4-.2-.4-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.4 3.8.2 4.2 1 1.2 1.7 2.6 1.7 4.4 0 6.2-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3 0 2.2-.1 3.9-.1 4.4 0 .4.3.9 1.1.8C43.4 45.1 48 39.1 48 32c0-8.8-7.2-16-16-16z'/%3E%3C/svg%3E">
 <style>
-/* ========== 所有样式与之前相同（为节省篇幅此处保持精简，实际完整样式参考之前） ========== */
+/* ========== 全局样式 ========== */
 * {
   box-sizing: border-box;
 }
@@ -24,41 +25,47 @@ body.dark {
   background: #1c1c1e url("images/bg.jpg") center/cover no-repeat fixed;
   color: #f5f5f7;
 }
-body.dark .post,
+body.dark .stats-card,
 body.dark nav,
 body.dark .modal-content,
-body.dark .info-card,
-body.dark .stats-card {
+body.dark .info-card {
   background: rgba(30,30,32,0.85);
   border-color: rgba(100,100,110,0.5);
   color: #f5f5f7;
 }
-body.dark .post p {
-  color: #e5e5ea;
+/* ----- 苹果风气泡卡片 + 清晰轮廓 ----- */
+.post {
+  margin: 0 auto 40px auto;
+  padding: 40px 50px;
+  max-width: 800px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(0, 0, 0, 0.15);      /* 清晰描边 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
 }
-body.dark .post-meta {
-  border-top-color: rgba(255,255,255,0.2);
+.post:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
 }
-body.dark header {
-  background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+body.dark .post {
+  background: rgba(30, 30, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 暗色模式清晰白边 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
-body.dark nav a {
-  color: #f5f5f7;
+body.dark .post:hover {
+  background: rgba(50, 50, 55, 0.7);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
-body.dark .modal-content input,
-body.dark .modal-content textarea {
-  background: #2c2c2e;
-  color: white;
-  border-color: #555;
-}
-body.dark .delete-btn {
-  background: rgba(255,100,100,0.2);
-}
+/* ----- 其余样式保持不变 ----- */
 header {
   text-align: center;
   padding: 60px 20px 40px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.35));
   backdrop-filter: blur(25px);
+  transition: background 0.3s;
 }
 body.dark header {
   background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
@@ -87,8 +94,7 @@ body.dark header p {
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  font-size: 15px;
-  font-weight: 500;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 .stat-item {
   display: flex;
@@ -114,6 +120,7 @@ nav {
   gap: 20px;
   background: rgba(255,255,255,0.75);
   backdrop-filter: blur(30px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   z-index: 1000;
   flex-wrap: wrap;
   justify-content: center;
@@ -123,7 +130,7 @@ nav a, .nav-btn {
   color: #1d1d1f;
   font-size: 15px;
   font-weight: 500;
-  transition: 0.3s ease;
+  transition: 0.3s;
   background: none;
   border: none;
   cursor: pointer;
@@ -138,7 +145,6 @@ nav a:hover, .nav-btn:hover {
   border-radius: 30px;
   padding: 4px 12px;
   font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
 }
 body.dark .sort-select {
@@ -151,20 +157,6 @@ body.dark .sort-select {
   border: none;
   font-size: 18px;
   padding: 0 8px;
-  font-weight: 500;
-}
-.post {
-  margin: 0 auto 40px auto;
-  padding: 40px 50px;
-  max-width: 800px;
-  border-radius: 32px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(40px);
-  border: 1px solid rgba(255,255,255,0.9);
-  transition: 0.3s ease;
-}
-.post:hover {
-  transform: translateY(-5px);
 }
 .post h2 {
   margin-top: 0;
@@ -173,6 +165,10 @@ body.dark .sort-select {
 .post p {
   font-size: 17px;
   line-height: 1.8;
+  color: #1d1d1f;
+}
+body.dark .post p {
+  color: #e5e5ea;
 }
 .post-meta {
   display: flex;
@@ -230,8 +226,9 @@ body.dark .post-actions button {
   padding: 40px 50px;
   max-width: 800px;
   border-radius: 32px;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.75);
   backdrop-filter: blur(40px);
+  border: 1px solid rgba(0,0,0,0.1);
 }
 .info-card h2 {
   margin-top: 0;
@@ -257,11 +254,15 @@ body.dark .post-actions button {
   background: #0071e3;
   color: white;
 }
-body.dark .page-btn.active {
-  background: #0071e3;
-}
 .page-btn:hover:not(.active) {
   background: rgba(0,0,0,0.15);
+}
+body.dark .page-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+body.dark .page-btn.active {
+  background: #0071e3;
 }
 #backToTop {
   position: fixed;
@@ -305,11 +306,7 @@ body.dark .page-btn.active {
   border-radius: 32px;
   max-width: 600px;
   width: 90%;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-}
-.modal-content h3 {
-  margin-top: 0;
-  font-size: 24px;
+  border: 1px solid rgba(255,255,255,0.8);
 }
 .modal-content input,
 .modal-content textarea {
@@ -363,6 +360,7 @@ body.dark .language-detection {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
+  position: relative;
   animation: typing 2.5s steps(12, end) forwards;
 }
 @keyframes typing {
@@ -383,9 +381,11 @@ body.dark .language-detection {
   50% { opacity: 0; }
 }
 @media (max-width: 600px) {
-  .post { padding: 25px 20px; }
+  .post { padding: 25px 20px; margin: 0 16px 30px; }
   .post-meta { flex-direction: column; align-items: flex-start; }
   .post-actions { align-self: flex-end; }
+  .stats-card { margin: 20px 16px 0; padding: 12px 20px; }
+  .info-card { margin: 30px 16px; padding: 25px 20px; }
 }
 </style>
 </head>
@@ -453,39 +453,26 @@ body.dark .language-detection {
 </div>
 
 <script>
-  // ---------- 语言检测函数 ----------
+  // ---------- 语言检测 ----------
   function detectLanguage(text) {
     if (!text.trim()) return "未知";
     const lower = text.toLowerCase();
-    // Python
     if (/def\s+\w+\s*\(|import\s+\w+|from\s+\w+\s+import|print\s*\(|class\s+\w+.*:/m.test(lower)) return "Python";
-    // JavaScript / TypeScript
     if (/function\s*\(|const\s+\w+\s*=\s*\(|let\s+\w+\s*=|=>\s*{|console\.log|document\.|window\./m.test(lower)) return "JavaScript";
-    // Java
     if (/public\s+class|System\.out\.println|private\s+static|void\s+main\s*\(/m.test(lower)) return "Java";
-    // C / C++
     if (/#include\s*[<"]|int\s+main\s*\(|printf\s*\(|scanf\s*\(|std::cout/m.test(lower)) return "C/C++";
-    // Go
     if (/package\s+main|func\s+main\s*\(|fmt\.Println|import\s*\(/m.test(lower)) return "Go";
-    // Ruby
     if (/def\s+\w+\s*\n|puts\s+["']|require\s+['"]|attr_accessor/m.test(lower)) return "Ruby";
-    // PHP
     if (/<\?php|echo\s+["']|\$_GET|\$_POST/m.test(lower)) return "PHP";
-    // HTML/XML
     if (/<(!DOCTYPE|html|head|body|div|span|p|a)[> ]/i.test(text)) return "HTML";
-    // YAML
     if (/^[\w-]+:\s|^\s+-\s+[\w-]+:/m.test(text)) return "YAML";
-    // JSON
     if (/^\s*\{\s*".*"\s*:/m.test(text) || /^\s*\[\s*\{/m.test(text)) return "JSON";
-    // Shell / Bash
     if (/^#!\/bin\/bash|^#!\/bin\/sh|echo\s+["']|\$\(\(|if\s+\[/m.test(lower)) return "Shell";
-    // SQL
     if (/select\s+.*\s+from|insert\s+into|update\s+\w+\s+set|create\s+table/m.test(lower)) return "SQL";
-    // 默认
     return "纯文本";
   }
 
-  // ---------- 文章数据结构与本地存储 ----------
+  // ---------- 文章数据 ----------
   let totalArticles = [];
   let currentPage = 1;
   const pageSize = 5;
@@ -510,7 +497,6 @@ body.dark .language-detection {
     const totalWords = totalArticles.reduce((sum, art) => sum + countWords(art.content), 0);
     document.getElementById('totalWordsCount').innerText = totalWords;
   }
-
   function loadDataFromStorage() {
     const stored = localStorage.getItem('blog_articles');
     if (stored) totalArticles = JSON.parse(stored);
@@ -602,9 +588,7 @@ body.dark .language-detection {
     if (totalPages===0) currentPage=1;
     else if (currentPage>totalPages) currentPage=totalPages;
   }
-
   function generateNewId() { return totalArticles.length>0 ? Math.max(...totalArticles.map(a=>a.id))+1 : 1; }
-
   function createArticle(title,content,date){
     const now = Date.now();
     const newId = generateNewId();
@@ -616,7 +600,6 @@ body.dark .language-detection {
     saveArticlesToStorage();
     notifyBackend('create',newArticle);
   }
-
   function updateArticle(id,title,content,date){
     const idx = totalArticles.findIndex(a=>a.id===id);
     if (idx!==-1) {
@@ -630,16 +613,14 @@ body.dark .language-detection {
       renderArticles();
     }
   }
-
   function deleteArticle(id){
-    if (!confirm("确定要删除这篇文章吗？")) return;
+    if (!confirm("确定要删除吗？")) return;
     totalArticles = totalArticles.filter(a=>a.id!==id);
     saveArticlesToStorage();
     notifyBackend('delete',{id});
     adjustPageAfterDataChange();
     renderArticles();
   }
-
   function incrementView(id){
     const article = totalArticles.find(a=>a.id===id);
     if (article) { article.views++; saveArticlesToStorage(); renderArticles(); }
@@ -668,21 +649,11 @@ body.dark .language-detection {
         document.getElementById('editDate').value = article.date;
       }
     }
-    // 初始语言检测
     updateLanguageHint(contentTextarea.value);
     modal.style.display = 'flex';
   }
-
-  function updateLanguageHint(text){
-    const lang = detectLanguage(text);
-    document.getElementById('languageHint').innerHTML = `🔍 检测到代码类型：${lang}`;
-  }
-
-  function closeEditModal(){
-    document.getElementById('editModal').style.display = 'none';
-    editingId = null;
-  }
-
+  function updateLanguageHint(text){ document.getElementById('languageHint').innerHTML = `🔍 检测到代码类型：${detectLanguage(text)}`; }
+  function closeEditModal(){ document.getElementById('editModal').style.display='none'; editingId=null; }
   function saveEdit(){
     const title = document.getElementById('editTitle').value.trim();
     const content = document.getElementById('editContent').value;
@@ -692,32 +663,25 @@ body.dark .language-detection {
     else updateArticle(editingId,title,content,date);
     closeEditModal();
   }
+  function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
-  function handleDeleteFromModal(){
-    if (editingId!==null){ deleteArticle(editingId); closeEditModal(); }
-  }
-
-  // 后端模拟同步（可选）
   const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
   async function syncToBackend(action,article){
     let url = API_BASE;
     let options = {};
-    switch(action){
-      case 'create': options={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:article.title,body:article.content,userId:1})}; break;
-      case 'update': options={method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:article.id,title:article.title,body:article.content})}; url+=`/${article.id}`; break;
-      case 'delete': options={method:'DELETE'}; url+=`/${article.id}`; break;
-      default: return;
-    }
-    try{ await fetch(url,options); console.log(`[后端同步] ${action} 成功`); } catch(err){ console.error(`[后端同步] ${action} 失败`,err); }
+    if(action==='create') options={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:article.title,body:article.content,userId:1})};
+    else if(action==='update'){ options={method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:article.id,title:article.title,body:article.content})}; url+=`/${article.id}`; }
+    else if(action==='delete'){ options={method:'DELETE'}; url+=`/${article.id}`; }
+    else return;
+    try{ await fetch(url,options); console.log(`[后端同步] ${action} 成功`); } catch(err){ console.error(`[后端同步] ${action} 失败`); }
   }
   function notifyBackend(action,article){ if(['create','update','delete'].includes(action)) syncToBackend(action,article); }
 
-  // 导航、暗色模式、滚动等辅助函数
   function setupNavigation(){
-    document.getElementById('navHome').addEventListener('click',(e)=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});});
-    document.getElementById('navAbout').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'});});
-    document.getElementById('navArticles').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'});});
-    document.getElementById('navContact').addEventListener('click',(e)=>{e.preventDefault(); document.getElementById('contact').scrollIntoView({behavior:'smooth'});});
+    document.getElementById('navHome').addEventListener('click',e=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('navAbout').addEventListener('click',e=>{e.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'});});
+    document.getElementById('navArticles').addEventListener('click',e=>{e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'});});
+    document.getElementById('navContact').addEventListener('click',e=>{e.preventDefault(); document.getElementById('contact').scrollIntoView({behavior:'smooth'});});
   }
   function initDarkMode(){
     const dark = localStorage.getItem('darkMode')==='true';
@@ -737,7 +701,7 @@ body.dark .language-detection {
   }
   function handleScroll(){ const btn=document.getElementById('backToTop'); if(window.scrollY>300) btn.style.display='flex'; else btn.style.display='none'; }
   function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
-  function escapeHtml(str){ return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+  function escapeHtml(str){ return str.replace(/[&<>]/g,m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
   function changeSort(value){ currentSort=value; currentPage=1; sortArticles(); renderArticles(); }
 
   function init(){
