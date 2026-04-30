@@ -28,7 +28,6 @@ body {
   display: flex;
   min-height: 100vh;
 }
-/* 侧边栏 */
 .sidebar {
   position: fixed;
   left: 0;
@@ -57,7 +56,6 @@ body.dark .sidebar {
 body.dark .sidebar-header {
   border-bottom-color: rgba(255,255,255,0.2);
 }
-/* 搜索框 */
 .search-box {
   margin-bottom: 20px;
   position: relative;
@@ -86,7 +84,6 @@ body.dark .search-box input:focus {
   border-color: #60a5fa;
   background: #2c2c2e;
 }
-/* 标签云 */
 .tag-cloud {
   margin: 20px 0;
   padding-bottom: 10px;
@@ -167,14 +164,12 @@ body.dark .tree-nav a:hover {
   color: #8e8e93;
   font-size: 13px;
 }
-/* 主内容区域 */
 .main-content {
   margin-left: 280px;
   flex: 1;
   padding: 0 20px;
   width: calc(100% - 280px);
 }
-/* 全屏阅读模态框 - 占满右侧主内容区域 */
 .fullscreen-modal {
   display: none;
   position: fixed;
@@ -269,7 +264,6 @@ body.dark .fullscreen-meta {
   border-radius: 12px;
   margin: 12px 0;
 }
-/* 优化后的编辑UI按钮组 */
 .fullscreen-actions {
   position: absolute;
   top: 20px;
@@ -328,7 +322,6 @@ body.dark .fullscreen-actions .close-btn:hover {
     font-size: 12px;
   }
 }
-/* 卡片内 Markdown 渲染样式 */
 .post .post-content {
   font-size: 17px;
   line-height: 1.8;
@@ -357,7 +350,6 @@ body.dark .post .post-content pre {
 body.dark .post .post-content code {
   background: rgba(255,255,255,0.1);
 }
-/* 卡片内标签样式 */
 .post-tags {
   margin-top: 8px;
   display: flex;
@@ -373,7 +365,6 @@ body.dark .post .post-content code {
 body.dark .post-tag {
   background: rgba(255,255,255,0.1);
 }
-/* 其他原有样式 */
 body.dark {
   background: #1c1c1e url("images/bg.jpg") center/cover no-repeat fixed;
   color: #ffffff;
@@ -662,6 +653,7 @@ nav a:hover, .nav-btn:hover {
 #backToTop:hover {
   background: black;
 }
+/* 编辑模态框样式 - 确保完整显示 */
 .modal {
   display: none;
   position: fixed;
@@ -674,16 +666,27 @@ nav a:hover, .nav-btn:hover {
   backdrop-filter: blur(12px);
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
 }
 .modal-content {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(40px);
-  margin: auto;
+  margin: 20px auto;
   padding: 30px 40px;
   border-radius: 32px;
   max-width: 700px;
   width: 90%;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 20px;
+    margin: 10px auto;
+    max-height: calc(100vh - 20px);
+  }
 }
 .modal-content input,
 .modal-content textarea {
@@ -769,6 +772,52 @@ nav a:hover, .nav-btn:hover {
 @keyframes blink {
   50% { opacity: 0; }
 }
+@media (max-width: 800px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    width: 260px;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .fullscreen-modal {
+    left: 0;
+  }
+  .fullscreen-main {
+    padding: 20px;
+  }
+  .fullscreen-toc {
+    display: none;
+  }
+}
+@media (min-width: 801px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+.menu-toggle {
+  display: none;
+}
 @media (max-width: 600px) {
   .post {
     padding: 25px 20px;
@@ -786,7 +835,6 @@ nav a:hover, .nav-btn:hover {
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="🔍 搜索文章标题...">
   </div>
-  <!-- 标签云区域 -->
   <div class="tag-cloud" id="tagCloud">
     <div class="tag-cloud-title">🏷️ 热门标签 <button class="clear-tag" id="clearTagFilter">清除</button></div>
     <div class="tag-list" id="tagList"></div>
@@ -799,12 +847,10 @@ nav a:hover, .nav-btn:hover {
   <h1 class="typing">Fancy 的博客</h1>
   <p>记录学习与成长 ✨</p>
 </header>
-
 <div class="stats-card">
   <div class="stat-item"><span class="stat-label">📄 总文章数</span><span class="stat-number" id="totalArticlesCount">0</span></div>
   <div class="stat-item"><span class="stat-label">📝 总字数</span><span class="stat-number" id="totalWordsCount">0</span></div>
 </div>
-
 <nav>
   <a href="#" id="navHome">首页</a>
   <a href="#" id="navAbout">关于我</a>
@@ -818,16 +864,13 @@ nav a:hover, .nav-btn:hover {
   <button class="nav-btn" id="newPostBtn">➕ 新建文章</button>
   <button class="theme-toggle" id="themeToggle">🌙 暗色</button>
 </nav>
-
 <div id="postsContainer"></div>
 <div id="paginationContainer" class="pagination"></div>
-
 <div id="about" class="info-card">
   <h2>📖 关于我</h2>
   <p>大家好，我是 Fancy，一名热爱技术的 SRE 工程师。喜欢研究自动化运维、云原生架构和 AI 赋能。这个博客用来记录学习笔记、技术思考和生活感悟。欢迎交流！</p>
   <p>GitHub: <a href="#" style="color: #0071e3;">github.com/fancy</a> (示例)</p>
 </div>
-
 <div id="contact" class="info-card">
   <h2>📧 联系我</h2>
   <p>如果你有任何问题或建议，可以通过以下方式联系我：</p>
@@ -835,10 +878,7 @@ nav a:hover, .nav-btn:hover {
   <p>💬 微信: fancy_wechat (示例)</p>
   <p>🐦 Twitter: @fancy_dev</p>
 </div>
-
 <button id="backToTop">↑</button>
-
-<!-- 编辑/新建模态框 -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">编辑文章</h3>
@@ -862,8 +902,6 @@ nav a:hover, .nav-btn:hover {
     </div>
   </div>
 </div>
-
-<!-- 全屏阅读模态框（带目录和优化编辑UI） -->
 <div id="fullscreenModal" class="fullscreen-modal">
   <div class="fullscreen-content">
     <div class="fullscreen-main">
@@ -886,617 +924,59 @@ nav a:hover, .nav-btn:hover {
   </div>
 </div>
 </div>
-
 <script>
-  // 配置 marked 选项，支持高亮
-  marked.setOptions({
-    breaks: true,
-    gfm: true,
-    highlight: function(code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return hljs.highlight(code, { language: lang }).value;
-        } catch(e) {}
-      }
-      return code;
-    }
-  });
-
-  // ---------- 安全 HTML 渲染 ----------
-  function sanitizeHtml(html) {
-    return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-               .replace(/on\w+="[^"]*"/gi, '')
-               .replace(/on\w+='[^']*'/gi, '');
-  }
-
-  function renderMarkdown(markdown) {
-    if (!markdown) return '';
-    let rawHtml = marked.parse(markdown);
-    if (typeof rawHtml === 'string') {
-      return sanitizeHtml(rawHtml);
-    }
-    return sanitizeHtml(rawHtml);
-  }
-
-  // 提取 TOC
-  function extractTOC(markdown) {
-    const lines = markdown.split('\n');
-    const toc = [];
-    lines.forEach(line => {
-      const match = line.match(/^(#{1,2})\s+(.*)$/);
-      if (match) {
-        const level = match[1].length;
-        const title = match[2].trim();
-        const id = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase();
-        toc.push({ level, title, id });
-      }
-    });
-    return toc;
-  }
-
-  function renderToc(toc) {
-    const container = document.getElementById('tocContent');
-    if (!container) return;
-    if (toc.length === 0) {
-      container.innerHTML = '<div style="color:gray;">无标题</div>';
-      return;
-    }
-    let html = '<ul style="list-style:none; padding-left:0;">';
-    toc.forEach(item => {
-      const indent = item.level === 2 ? 'padding-left:16px;' : '';
-      html += `<li style="margin-bottom:8px; ${indent}"><a class="toc-link" data-id="${item.id}" style="cursor:pointer;">${escapeHtml(item.title)}</a></li>`;
-    });
-    html += '</ul>';
-    container.innerHTML = html;
-    document.querySelectorAll('.toc-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const id = link.getAttribute('data-id');
-        const target = document.getElementById(`toc-${id}`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          const headings = document.querySelectorAll('#fullscreenBody h1, #fullscreenBody h2');
-          for (let h of headings) {
-            if (h.textContent.trim() === link.textContent.trim()) {
-              h.scrollIntoView({ behavior: 'smooth' });
-              break;
-            }
-          }
-        }
-      });
-    });
-  }
-
-  function detectLanguage(text) {
-    if (!text.trim()) return "未知";
-    const lower = text.toLowerCase();
-    if (/def\s+\w+\s*\(|import\s+\w+|print\s*\(/m.test(lower)) return "Python";
-    if (/function\s*\(|const\s+\w+\s*=/m.test(lower)) return "JavaScript";
-    if (/public\s+class|System\.out\.println/m.test(lower)) return "Java";
-    if (/#include\s*[<"]|int\s+main/m.test(lower)) return "C/C++";
-    if (/package\s+main|func\s+main/m.test(lower)) return "Go";
-    if (/<(!DOCTYPE|html|head)/i.test(text)) return "HTML";
-    if (/^[\w-]+:\s|^\s+-\s+[\w-]+:/m.test(text)) return "YAML";
-    if (/^\s*\{\s*".*"\s*:/m.test(text)) return "JSON";
-    if (/^#!\/bin\/bash|echo\s+["']/m.test(lower)) return "Shell";
-    return "纯文本";
-  }
-
-  // ---------- 文章数据 ----------
-  let totalArticles = [];
-  let currentPage = 1;
-  const pageSize = 5;
-  let currentSort = 'created_desc';
-  let currentTagFilter = null;
-
-  const defaultArticles = [
-    { id: 1, title: "我的第一篇文章", content: "# 欢迎\n这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。\n\n- 支持 Markdown 语法\n- **粗体**、*斜体*\n- `代码片段`", date: "2025-04-01", views: 128, tags: ["生活", "杂谈"], createdAt: 1743494400000, updatedAt: 1743494400000 },
-    { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，`dict2items` 可以方便遍历字典，结合 `loop` 使用。\n\n```yaml\n- name: 遍历字典\n  debug:\n    msg: \"{{ item.key }}: {{ item.value }}\"\n  loop: \"{{ my_dict | dict2items }}\"\n```", date: "2025-04-15", views: 86, tags: ["Ansible", "自动化"], createdAt: 1744704000000, updatedAt: 1744704000000 },
-    { id: 3, title: "SRE 的北极星指标", content: "## SLO（服务水平目标）\nSLO 是 SRE 的核心指标，直接反映用户对系统稳定性的感知。\n\n> 错误预算 = 1 - SLO", date: "2025-04-20", views: 203, tags: ["SRE", "稳定性"], createdAt: 1745193600000, updatedAt: 1745193600000 },
-    { id: 4, title: "Ubuntu 静态IP配置", content: "使用 `netplan` 轻松设置固定IP，别忘了 `apply`。\n\n```bash\nsudo netplan apply\n```", date: "2025-04-22", views: 55, tags: ["Linux", "网络"], createdAt: 1745366400000, updatedAt: 1745366400000 },
-    { id: 5, title: "使用 Ansible 管理 NFS", content: "通过 `mount` 模块批量挂载，并通过 `lineinfile` 配置 `/etc/fstab`。\n\n![示例图片](https://via.placeholder.com/400)", date: "2025-04-25", views: 42, tags: ["Ansible", "存储"], createdAt: 1745625600000, updatedAt: 1745625600000 }
-  ];
-  const moreArticles = [
-    { id: 6, title: "一文读懂 when 语句", content: "Ansible中 `when` 用于条件判断，支持多种表达式。\n\n```yaml\nwhen: ansible_os_family == \"Debian\"\n```", date: "2025-04-26", views: 31, tags: ["Ansible"], createdAt: 1745712000000, updatedAt: 1745712000000 },
-    { id: 7, title: "注册变量和 changed 判断", content: "`register` 捕获任务输出，通过 `when` 结合 `changed` 做条件触发。", date: "2025-04-27", views: 27, tags: ["Ansible"], createdAt: 1745798400000, updatedAt: 1745798400000 },
-    { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, tags: ["监控", "Prometheus"], createdAt: 1745884800000, updatedAt: 1745884800000 }
-  ];
-
-  function countWords(markdown) {
-    const plainText = markdown.replace(/<[^>]*>/g, '').replace(/[#*_`\[\]()>]/g, '');
-    return plainText.replace(/\s+/g, '').length;
-  }
-  function updateStats() {
-    document.getElementById('totalArticlesCount').innerText = totalArticles.length;
-    const totalWords = totalArticles.reduce((sum, art) => sum + countWords(art.content), 0);
-    document.getElementById('totalWordsCount').innerText = totalWords;
-  }
-  function loadDataFromStorage() {
-    const stored = localStorage.getItem('blog_articles');
-    if (stored) totalArticles = JSON.parse(stored);
-    else {
-      totalArticles = [...defaultArticles];
-      const existIds = new Set(totalArticles.map(a=>a.id));
-      for (let art of moreArticles) if (!existIds.has(art.id)) totalArticles.push(art);
-    }
-    let needSave = false;
-    totalArticles = totalArticles.map(art => {
-      let updated = art;
-      if (!art.createdAt) {
-        needSave = true;
-        let ts = Date.parse(art.date);
-        if (isNaN(ts)) ts = 1743000000000 + art.id*86400000;
-        updated.createdAt = ts;
-      }
-      if (!art.updatedAt) { needSave = true; updated.updatedAt = updated.createdAt; }
-      if (art.views === undefined) { needSave = true; updated.views = 0; }
-      if (!art.tags) { needSave = true; updated.tags = []; }
-      return updated;
-    });
-    if (needSave) saveArticlesToStorage();
-    updateStats();
-  }
+  marked.setOptions({ breaks: true, gfm: true, highlight: function(code, lang) { if (lang && hljs.getLanguage(lang)) { try { return hljs.highlight(code, { language: lang }).value; } catch(e) {} } return code; } });
+  function sanitizeHtml(html) { return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/on\w+="[^"]*"/gi, '').replace(/on\w+='[^']*'/gi, ''); }
+  function renderMarkdown(markdown) { if (!markdown) return ''; let rawHtml = marked.parse(markdown); if (typeof rawHtml === 'string') { return sanitizeHtml(rawHtml); } return sanitizeHtml(rawHtml); }
+  function extractTOC(markdown) { const lines = markdown.split('\n'); const toc = []; lines.forEach(line => { const match = line.match(/^(#{1,2})\s+(.*)$/); if (match) { const level = match[1].length; const title = match[2].trim(); const id = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase(); toc.push({ level, title, id }); } }); return toc; }
+  function renderToc(toc) { const container = document.getElementById('tocContent'); if (!container) return; if (toc.length === 0) { container.innerHTML = '<div style="color:gray;">无标题</div>'; return; } let html = '<ul style="list-style:none; padding-left:0;">'; toc.forEach(item => { const indent = item.level === 2 ? 'padding-left:16px;' : ''; html += `<li style="margin-bottom:8px; ${indent}"><a class="toc-link" data-id="${item.id}" style="cursor:pointer;">${escapeHtml(item.title)}</a></li>`; }); html += '</ul>'; container.innerHTML = html; document.querySelectorAll('.toc-link').forEach(link => { link.addEventListener('click', (e) => { const id = link.getAttribute('data-id'); const target = document.getElementById(`toc-${id}`); if (target) { target.scrollIntoView({ behavior: 'smooth' }); } else { const headings = document.querySelectorAll('#fullscreenBody h1, #fullscreenBody h2'); for (let h of headings) { if (h.textContent.trim() === link.textContent.trim()) { h.scrollIntoView({ behavior: 'smooth' }); break; } } } }); }); }
+  function detectLanguage(text) { if (!text.trim()) return "未知"; const lower = text.toLowerCase(); if (/def\s+\w+\s*\(|import\s+\w+|print\s*\(/m.test(lower)) return "Python"; if (/function\s*\(|const\s+\w+\s*=/m.test(lower)) return "JavaScript"; if (/public\s+class|System\.out\.println/m.test(lower)) return "Java"; if (/#include\s*[<"]|int\s+main/m.test(lower)) return "C/C++"; if (/package\s+main|func\s+main/m.test(lower)) return "Go"; if (/<(!DOCTYPE|html|head)/i.test(text)) return "HTML"; if (/^[\w-]+:\s|^\s+-\s+[\w-]+:/m.test(text)) return "YAML"; if (/^\s*\{\s*".*"\s*:/m.test(text)) return "JSON"; if (/^#!\/bin\/bash|echo\s+["']/m.test(lower)) return "Shell"; return "纯文本"; }
+  let totalArticles = []; let currentPage = 1; const pageSize = 5; let currentSort = 'created_desc'; let currentTagFilter = null;
+  const defaultArticles = [ { id: 1, title: "我的第一篇文章", content: "# 欢迎\n这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。\n\n- 支持 Markdown 语法\n- **粗体**、*斜体*\n- `代码片段`", date: "2025-04-01", views: 128, tags: ["生活", "杂谈"], createdAt: 1743494400000, updatedAt: 1743494400000 }, { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，`dict2items` 可以方便遍历字典，结合 `loop` 使用。\n\n```yaml\n- name: 遍历字典\n  debug:\n    msg: \"{{ item.key }}: {{ item.value }}\"\n  loop: \"{{ my_dict | dict2items }}\"\n```", date: "2025-04-15", views: 86, tags: ["Ansible", "自动化"], createdAt: 1744704000000, updatedAt: 1744704000000 }, { id: 3, title: "SRE 的北极星指标", content: "## SLO（服务水平目标）\nSLO 是 SRE 的核心指标，直接反映用户对系统稳定性的感知。\n\n> 错误预算 = 1 - SLO", date: "2025-04-20", views: 203, tags: ["SRE", "稳定性"], createdAt: 1745193600000, updatedAt: 1745193600000 }, { id: 4, title: "Ubuntu 静态IP配置", content: "使用 `netplan` 轻松设置固定IP，别忘了 `apply`。\n\n```bash\nsudo netplan apply\n```", date: "2025-04-22", views: 55, tags: ["Linux", "网络"], createdAt: 1745366400000, updatedAt: 1745366400000 }, { id: 5, title: "使用 Ansible 管理 NFS", content: "通过 `mount` 模块批量挂载，并通过 `lineinfile` 配置 `/etc/fstab`。\n\n![示例图片](https://via.placeholder.com/400)", date: "2025-04-25", views: 42, tags: ["Ansible", "存储"], createdAt: 1745625600000, updatedAt: 1745625600000 } ];
+  const moreArticles = [ { id: 6, title: "一文读懂 when 语句", content: "Ansible中 `when` 用于条件判断，支持多种表达式。\n\n```yaml\nwhen: ansible_os_family == \"Debian\"\n```", date: "2025-04-26", views: 31, tags: ["Ansible"], createdAt: 1745712000000, updatedAt: 1745712000000 }, { id: 7, title: "注册变量和 changed 判断", content: "`register` 捕获任务输出，通过 `when` 结合 `changed` 做条件触发。", date: "2025-04-27", views: 27, tags: ["Ansible"], createdAt: 1745798400000, updatedAt: 1745798400000 }, { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, tags: ["监控", "Prometheus"], createdAt: 1745884800000, updatedAt: 1745884800000 } ];
+  function countWords(markdown) { const plainText = markdown.replace(/<[^>]*>/g, '').replace(/[#*_`\[\]()>]/g, ''); return plainText.replace(/\s+/g, '').length; }
+  function updateStats() { document.getElementById('totalArticlesCount').innerText = totalArticles.length; const totalWords = totalArticles.reduce((sum, art) => sum + countWords(art.content), 0); document.getElementById('totalWordsCount').innerText = totalWords; }
+  function loadDataFromStorage() { const stored = localStorage.getItem('blog_articles'); if (stored) totalArticles = JSON.parse(stored); else { totalArticles = [...defaultArticles]; const existIds = new Set(totalArticles.map(a=>a.id)); for (let art of moreArticles) if (!existIds.has(art.id)) totalArticles.push(art); } let needSave = false; totalArticles = totalArticles.map(art => { let updated = art; if (!art.createdAt) { needSave = true; let ts = Date.parse(art.date); if (isNaN(ts)) ts = 1743000000000 + art.id*86400000; updated.createdAt = ts; } if (!art.updatedAt) { needSave = true; updated.updatedAt = updated.createdAt; } if (art.views === undefined) { needSave = true; updated.views = 0; } if (!art.tags) { needSave = true; updated.tags = []; } return updated; }); if (needSave) saveArticlesToStorage(); updateStats(); }
   function saveArticlesToStorage() { localStorage.setItem('blog_articles', JSON.stringify(totalArticles)); updateStats(); }
-
-  function sortArticles() {
-    if (currentSort === 'created_desc') totalArticles.sort((a,b)=>b.createdAt - a.createdAt);
-    else if (currentSort === 'created_asc') totalArticles.sort((a,b)=>a.createdAt - b.createdAt);
-    else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt);
-  }
-
-  function getAllTags() {
-    const tagMap = new Map();
-    totalArticles.forEach(art => {
-      if (art.tags && art.tags.length) {
-        art.tags.forEach(tag => {
-          tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
-        });
-      }
-    });
-    return Array.from(tagMap.entries()).sort((a,b)=>b[1]-a[1]);
-  }
-
-  function renderTagCloud() {
-    const container = document.getElementById('tagList');
-    if (!container) return;
-    const tags = getAllTags();
-    if (tags.length === 0) {
-      container.innerHTML = '<span style="font-size:12px; color:gray;">暂无标签</span>';
-      return;
-    }
-    let html = '';
-    tags.forEach(([tag, count]) => {
-      const activeClass = currentTagFilter === tag ? 'active' : '';
-      html += `<span class="tag ${activeClass}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)} (${count})</span>`;
-    });
-    container.innerHTML = html;
-    document.querySelectorAll('.tag').forEach(el => {
-      el.addEventListener('click', (e) => {
-        const tag = el.getAttribute('data-tag');
-        if (currentTagFilter === tag) {
-          currentTagFilter = null;
-        } else {
-          currentTagFilter = tag;
-        }
-        renderTagCloud();
-        currentPage = 1;
-        renderArticles();
-        renderSidebar();
-      });
-    });
-  }
-
-  function clearTagFilter() {
-    currentTagFilter = null;
-    renderTagCloud();
-    currentPage = 1;
-    renderArticles();
-    renderSidebar();
-  }
-
+  function sortArticles() { if (currentSort === 'created_desc') totalArticles.sort((a,b)=>b.createdAt - a.createdAt); else if (currentSort === 'created_asc') totalArticles.sort((a,b)=>a.createdAt - b.createdAt); else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt); }
+  function getAllTags() { const tagMap = new Map(); totalArticles.forEach(art => { if (art.tags && art.tags.length) { art.tags.forEach(tag => { tagMap.set(tag, (tagMap.get(tag) || 0) + 1); }); } }); return Array.from(tagMap.entries()).sort((a,b)=>b[1]-a[1]); }
+  function renderTagCloud() { const container = document.getElementById('tagList'); if (!container) return; const tags = getAllTags(); if (tags.length === 0) { container.innerHTML = '<span style="font-size:12px; color:gray;">暂无标签</span>'; return; } let html = ''; tags.forEach(([tag, count]) => { const activeClass = currentTagFilter === tag ? 'active' : ''; html += `<span class="tag ${activeClass}" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)} (${count})</span>`; }); container.innerHTML = html; document.querySelectorAll('.tag').forEach(el => { el.addEventListener('click', () => { const tag = el.getAttribute('data-tag'); currentTagFilter = currentTagFilter === tag ? null : tag; renderTagCloud(); currentPage = 1; renderArticles(); renderSidebar(); }); }); }
+  function clearTagFilter() { currentTagFilter = null; renderTagCloud(); currentPage = 1; renderArticles(); renderSidebar(); }
   let currentSearchKeyword = '';
-  function renderSidebar() {
-    let filteredArticles = totalArticles;
-    if (currentSearchKeyword.trim() !== '') {
-      const kw = currentSearchKeyword.trim().toLowerCase();
-      filteredArticles = filteredArticles.filter(art => art.title.toLowerCase().includes(kw));
-    }
-    if (currentTagFilter) {
-      filteredArticles = filteredArticles.filter(art => art.tags && art.tags.includes(currentTagFilter));
-    }
-    const container = document.getElementById('treeNav');
-    const noResultDiv = document.getElementById('searchNoResult');
-    if (!container) return;
-    if (filteredArticles.length === 0) {
-      container.innerHTML = '';
-      noResultDiv.style.display = 'block';
-      return;
-    }
-    noResultDiv.style.display = 'none';
-    let html = '';
-    for (let art of filteredArticles) {
-      html += `<li><a data-id="${art.id}" class="nav-link">${escapeHtml(art.title)}</a></li>`;
-    }
-    container.innerHTML = html;
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const id = parseInt(link.getAttribute('data-id'));
-        const article = totalArticles.find(a => a.id === id);
-        if (!article) return;
-        const index = totalArticles.findIndex(a => a.id === id);
-        const targetPage = Math.floor(index / pageSize) + 1;
-        if (targetPage !== currentPage) {
-          currentPage = targetPage;
-          renderArticles();
-          setTimeout(() => scrollToArticle(id), 100);
-        } else {
-          scrollToArticle(id);
-        }
-      });
-    });
-  }
-
-  function scrollToArticle(articleId) {
-    const articleCard = document.querySelector(`.post[data-id="${articleId}"]`);
-    if (articleCard) articleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function initSearch() {
-    const searchInput = document.getElementById('searchInput');
-    if (!searchInput) return;
-    searchInput.addEventListener('input', (e) => {
-      currentSearchKeyword = e.target.value;
-      renderSidebar();
-    });
-  }
-
+  function renderSidebar() { let filteredArticles = totalArticles; if (currentSearchKeyword.trim() !== '') { const kw = currentSearchKeyword.trim().toLowerCase(); filteredArticles = filteredArticles.filter(art => art.title.toLowerCase().includes(kw)); } if (currentTagFilter) { filteredArticles = filteredArticles.filter(art => art.tags && art.tags.includes(currentTagFilter)); } const container = document.getElementById('treeNav'); const noResultDiv = document.getElementById('searchNoResult'); if (!container) return; if (filteredArticles.length === 0) { container.innerHTML = ''; noResultDiv.style.display = 'block'; return; } noResultDiv.style.display = 'none'; let html = ''; for (let art of filteredArticles) { html += `<li><a data-id="${art.id}" class="nav-link">${escapeHtml(art.title)}</a></li>`; } container.innerHTML = html; document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', (e) => { const id = parseInt(link.getAttribute('data-id')); const article = totalArticles.find(a => a.id === id); if (!article) return; const index = totalArticles.findIndex(a => a.id === id); const targetPage = Math.floor(index / pageSize) + 1; if (targetPage !== currentPage) { currentPage = targetPage; renderArticles(); setTimeout(() => scrollToArticle(id), 100); } else { scrollToArticle(id); } }); }); }
+  function scrollToArticle(articleId) { const articleCard = document.querySelector(`.post[data-id="${articleId}"]`); if (articleCard) articleCard.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function initSearch() { const searchInput = document.getElementById('searchInput'); if (!searchInput) return; searchInput.addEventListener('input', (e) => { currentSearchKeyword = e.target.value; renderSidebar(); }); }
   let currentFullscreenArticleId = null;
-  function showFullscreenArticle(article) {
-    currentFullscreenArticleId = article.id;
-    document.getElementById('fullscreenTitle').innerText = article.title;
-    document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`;
-    document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`;
-    const tagsHtml = article.tags && article.tags.length ? `🏷️ ${article.tags.join(', ')}` : '';
-    document.getElementById('fullscreenTags').innerHTML = tagsHtml;
-    const renderedHtml = renderMarkdown(article.content);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = renderedHtml;
-    const headings = tempDiv.querySelectorAll('h1, h2');
-    headings.forEach((h, idx) => {
-      const text = h.textContent.trim();
-      const id = text.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase();
-      h.id = `toc-${id}`;
-    });
-    document.getElementById('fullscreenBody').innerHTML = tempDiv.innerHTML;
-    const toc = extractTOC(article.content);
-    renderToc(toc);
-    document.getElementById('fullscreenModal').style.display = 'flex';
-    document.querySelectorAll('#fullscreenBody pre code').forEach(block => {
-      hljs.highlightElement(block);
-    });
-  }
-
+  function showFullscreenArticle(article) { currentFullscreenArticleId = article.id; document.getElementById('fullscreenTitle').innerText = article.title; document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`; document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`; const tagsHtml = article.tags && article.tags.length ? `🏷️ ${article.tags.join(', ')}` : ''; document.getElementById('fullscreenTags').innerHTML = tagsHtml; const renderedHtml = renderMarkdown(article.content); const tempDiv = document.createElement('div'); tempDiv.innerHTML = renderedHtml; const headings = tempDiv.querySelectorAll('h1, h2'); headings.forEach((h) => { const text = h.textContent.trim(); const id = text.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase(); h.id = `toc-${id}`; }); document.getElementById('fullscreenBody').innerHTML = tempDiv.innerHTML; const toc = extractTOC(article.content); renderToc(toc); document.getElementById('fullscreenModal').style.display = 'flex'; document.querySelectorAll('#fullscreenBody pre code').forEach(block => { hljs.highlightElement(block); }); }
   function closeFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
-
-  function editCurrentArticle() {
-    if (currentFullscreenArticleId !== null) {
-      closeFullscreen();
-      openEditModal(currentFullscreenArticleId);
-    }
-  }
-
-  function renderArticles() {
-    let filtered = [...totalArticles];
-    if (currentTagFilter) {
-      filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter));
-    }
-    sortArticles();
-    filtered.sort((a,b) => {
-      if (currentSort === 'created_desc') return b.createdAt - a.createdAt;
-      if (currentSort === 'created_asc') return a.createdAt - b.createdAt;
-      if (currentSort === 'updated_desc') return b.updatedAt - a.updatedAt;
-      return 0;
-    });
-    const start = (currentPage-1)*pageSize;
-    const pageArticles = filtered.slice(start, start+pageSize);
-    const container = document.getElementById('postsContainer');
-    if (!container) return;
-    if (filtered.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>';
-      document.getElementById('paginationContainer').innerHTML = '';
-      renderSidebar();
-      return;
-    }
-    let html = '';
-    for (let art of pageArticles) {
-      const wc = countWords(art.content);
-      const rendered = renderMarkdown(art.content);
-      const tagsHtml = art.tags && art.tags.length ? `<div class="post-tags">${art.tags.map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('')}</div>` : '';
-      html += `
-        <section class="post" data-id="${art.id}">
-          <h2>${escapeHtml(art.title)}</h2>
-          <div class="post-content">${rendered}</div>
-          ${tagsHtml}
-          <div class="post-meta">
-            <div class="meta-left">
-              <span>📅 ${art.date}</span>
-              <span class="read-count" data-id="${art.id}">👀 ${art.views} 次阅读</span>
-              <span>📝 ${wc} 字</span>
-            </div>
-            <div class="post-actions">
-              <button class="edit-btn" data-id="${art.id}">✏️ 编辑</button>
-              <button class="delete-btn" data-id="${art.id}">🗑️ 删除</button>
-            </div>
-          </div>
-        </section>
-      `;
-    }
-    container.innerHTML = html;
-    document.querySelectorAll('.post').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.edit-btn') || e.target.closest('.delete-btn')) return;
-        const id = parseInt(card.getAttribute('data-id'));
-        const article = totalArticles.find(a => a.id === id);
-        if (article) showFullscreenArticle(article);
-      });
-    });
-    document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',(e)=>{
-      e.stopPropagation();
-      const id = parseInt(btn.dataset.id);
-      openEditModal(id);
-    }));
-    document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',(e)=>{
-      e.stopPropagation();
-      const id = parseInt(btn.dataset.id);
-      deleteArticle(id);
-    }));
-    document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',(e)=>{
-      e.stopPropagation();
-      const id = parseInt(el.dataset.id);
-      incrementView(id);
-    }));
-    document.querySelectorAll('.post-content pre code').forEach(block => {
-      hljs.highlightElement(block);
-    });
-    renderPagination(filtered.length);
-    renderSidebar();
-    renderTagCloud();
-  }
-
-  function renderPagination(total) {
-    const totalPages = Math.ceil(total / pageSize);
-    const container = document.getElementById('paginationContainer');
-    if (totalPages<=1) { container.innerHTML = ''; return; }
-    let html = '';
-    if (currentPage>1) html += `<button class="page-btn" data-page="${currentPage-1}">← 上一页</button>`;
-    for (let i=1;i<=totalPages;i++) html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`;
-    if (currentPage<totalPages) html += `<button class="page-btn" data-page="${currentPage+1}">下一页 →</button>`;
-    container.innerHTML = html;
-    container.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{
-      const page = parseInt(btn.dataset.page);
-      if (!isNaN(page) && page!==currentPage) { currentPage=page; renderArticles(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'}); }
-    }));
-  }
-
-  function adjustPageAfterDataChange() {
-    let filtered = totalArticles;
-    if (currentTagFilter) filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter));
-    const totalPages = Math.ceil(filtered.length / pageSize);
-    if (totalPages===0) currentPage=1;
-    else if (currentPage>totalPages) currentPage=totalPages;
-  }
-
+  function editCurrentArticle() { if (currentFullscreenArticleId !== null) { closeFullscreen(); openEditModal(currentFullscreenArticleId); } }
+  function renderArticles() { let filtered = [...totalArticles]; if (currentTagFilter) { filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter)); } sortArticles(); filtered.sort((a,b) => { if (currentSort === 'created_desc') return b.createdAt - a.createdAt; if (currentSort === 'created_asc') return a.createdAt - b.createdAt; if (currentSort === 'updated_desc') return b.updatedAt - a.updatedAt; return 0; }); const start = (currentPage-1)*pageSize; const pageArticles = filtered.slice(start, start+pageSize); const container = document.getElementById('postsContainer'); if (!container) return; if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>'; document.getElementById('paginationContainer').innerHTML = ''; renderSidebar(); return; } let html = ''; for (let art of pageArticles) { const wc = countWords(art.content); const rendered = renderMarkdown(art.content); const tagsHtml = art.tags && art.tags.length ? `<div class="post-tags">${art.tags.map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''; html += `<section class="post" data-id="${art.id}"><h2>${escapeHtml(art.title)}</h2><div class="post-content">${rendered}</div>${tagsHtml}<div class="post-meta"><div class="meta-left"><span>📅 ${art.date}</span><span class="read-count" data-id="${art.id}">👀 ${art.views} 次阅读</span><span>📝 ${wc} 字</span></div><div class="post-actions"><button class="edit-btn" data-id="${art.id}">✏️ 编辑</button><button class="delete-btn" data-id="${art.id}">🗑️ 删除</button></div></div></section>`; } container.innerHTML = html; document.querySelectorAll('.post').forEach(card => { card.addEventListener('click', (e) => { if (e.target.closest('.edit-btn') || e.target.closest('.delete-btn')) return; const id = parseInt(card.getAttribute('data-id')); const article = totalArticles.find(a => a.id === id); if (article) showFullscreenArticle(article); }); }); document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(btn.dataset.id); openEditModal(id); })); document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(btn.dataset.id); deleteArticle(id); })); document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(el.dataset.id); incrementView(id); })); document.querySelectorAll('.post-content pre code').forEach(block => { hljs.highlightElement(block); }); renderPagination(filtered.length); renderSidebar(); renderTagCloud(); }
+  function renderPagination(total) { const totalPages = Math.ceil(total / pageSize); const container = document.getElementById('paginationContainer'); if (totalPages<=1) { container.innerHTML = ''; return; } let html = ''; if (currentPage>1) html += `<button class="page-btn" data-page="${currentPage-1}">← 上一页</button>`; for (let i=1;i<=totalPages;i++) html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`; if (currentPage<totalPages) html += `<button class="page-btn" data-page="${currentPage+1}">下一页 →</button>`; container.innerHTML = html; container.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{ const page = parseInt(btn.dataset.page); if (!isNaN(page) && page!==currentPage) { currentPage=page; renderArticles(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'}); } })); }
+  function adjustPageAfterDataChange() { let filtered = totalArticles; if (currentTagFilter) filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter)); const totalPages = Math.ceil(filtered.length / pageSize); if (totalPages===0) currentPage=1; else if (currentPage>totalPages) currentPage=totalPages; }
   function generateNewId() { return totalArticles.length>0 ? Math.max(...totalArticles.map(a=>a.id))+1 : 1; }
-  function createArticle(title,content,date,tags){
-    const now = Date.now();
-    const newId = generateNewId();
-    const tagArray = tags ? tags.split(',').map(s=>s.trim()).filter(s=>s) : [];
-    const newArticle = { id:newId, title, content, date:date||new Date().toISOString().slice(0,10), views:0, createdAt:now, updatedAt:now, tags:tagArray };
-    totalArticles.push(newArticle);
-    sortArticles();
-    adjustPageAfterDataChange();
-    renderArticles();
-    saveArticlesToStorage();
-    notifyBackend('create',newArticle);
-  }
-  function updateArticle(id,title,content,date,tags){
-    const idx = totalArticles.findIndex(a=>a.id===id);
-    if (idx!==-1) {
-      totalArticles[idx].title = title;
-      totalArticles[idx].content = content;
-      totalArticles[idx].date = date;
-      totalArticles[idx].updatedAt = Date.now();
-      totalArticles[idx].tags = tags ? tags.split(',').map(s=>s.trim()).filter(s=>s) : [];
-      saveArticlesToStorage();
-      notifyBackend('update',totalArticles[idx]);
-      sortArticles();
-      renderArticles();
-    }
-  }
-  function deleteArticle(id){
-    if (!confirm("确定要删除吗？")) return;
-    totalArticles = totalArticles.filter(a=>a.id!==id);
-    saveArticlesToStorage();
-    notifyBackend('delete',{id});
-    adjustPageAfterDataChange();
-    renderArticles();
-  }
-  function incrementView(id){
-    const article = totalArticles.find(a=>a.id===id);
-    if (article) { article.views++; saveArticlesToStorage(); renderArticles(); }
-  }
-
+  function createArticle(title,content,date,tags){ const now = Date.now(); const newId = generateNewId(); const tagArray = tags ? tags.split(',').map(s=>s.trim()).filter(s=>s) : []; const newArticle = { id:newId, title, content, date:date||new Date().toISOString().slice(0,10), views:0, createdAt:now, updatedAt:now, tags:tagArray }; totalArticles.push(newArticle); sortArticles(); adjustPageAfterDataChange(); renderArticles(); saveArticlesToStorage(); notifyBackend('create',newArticle); }
+  function updateArticle(id,title,content,date,tags){ const idx = totalArticles.findIndex(a=>a.id===id); if (idx!==-1) { totalArticles[idx].title = title; totalArticles[idx].content = content; totalArticles[idx].date = date; totalArticles[idx].updatedAt = Date.now(); totalArticles[idx].tags = tags ? tags.split(',').map(s=>s.trim()).filter(s=>s) : []; saveArticlesToStorage(); notifyBackend('update',totalArticles[idx]); sortArticles(); renderArticles(); } }
+  function deleteArticle(id){ if (!confirm("确定要删除吗？")) return; totalArticles = totalArticles.filter(a=>a.id!==id); saveArticlesToStorage(); notifyBackend('delete',{id}); adjustPageAfterDataChange(); renderArticles(); }
+  function incrementView(id){ const article = totalArticles.find(a=>a.id===id); if (article) { article.views++; saveArticlesToStorage(); renderArticles(); } }
   let editingId = null;
-  function openEditModal(id=null){
-    editingId = id;
-    const modal = document.getElementById('editModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const deleteBtn = document.getElementById('deleteArticleBtn');
-    const contentTextarea = document.getElementById('editContent');
-    if (id===null) {
-      modalTitle.innerText = '新建文章';
-      deleteBtn.style.display = 'none';
-      document.getElementById('editTitle').value = '';
-      document.getElementById('editTags').value = '';
-      contentTextarea.value = '';
-      document.getElementById('editDate').value = new Date().toISOString().slice(0,10);
-    } else {
-      modalTitle.innerText = '编辑文章';
-      deleteBtn.style.display = 'block';
-      const article = totalArticles.find(a=>a.id===id);
-      if (article) {
-        document.getElementById('editTitle').value = article.title;
-        document.getElementById('editTags').value = article.tags ? article.tags.join(', ') : '';
-        contentTextarea.value = article.content;
-        document.getElementById('editDate').value = article.date;
-      }
-    }
-    updateLanguageHint(contentTextarea.value);
-    modal.style.display = 'flex';
-  }
+  function openEditModal(id=null){ editingId = id; const modal = document.getElementById('editModal'); const modalTitle = document.getElementById('modalTitle'); const deleteBtn = document.getElementById('deleteArticleBtn'); const contentTextarea = document.getElementById('editContent'); if (id===null) { modalTitle.innerText = '新建文章'; deleteBtn.style.display = 'none'; document.getElementById('editTitle').value = ''; document.getElementById('editTags').value = ''; contentTextarea.value = ''; document.getElementById('editDate').value = new Date().toISOString().slice(0,10); } else { modalTitle.innerText = '编辑文章'; deleteBtn.style.display = 'block'; const article = totalArticles.find(a=>a.id===id); if (article) { document.getElementById('editTitle').value = article.title; document.getElementById('editTags').value = article.tags ? article.tags.join(', ') : ''; contentTextarea.value = article.content; document.getElementById('editDate').value = article.date; } } updateLanguageHint(contentTextarea.value); modal.style.display = 'flex'; }
   function updateLanguageHint(text){ document.getElementById('languageHint').innerHTML = `🔍 检测到代码类型：${detectLanguage(text)}`; }
   function closeEditModal(){ document.getElementById('editModal').style.display='none'; editingId=null; }
-  function saveEdit(){
-    const title = document.getElementById('editTitle').value.trim();
-    let content = document.getElementById('editContent').value;
-    const date = document.getElementById('editDate').value;
-    const tags = document.getElementById('editTags').value;
-    if (!title || !content) { alert('标题和内容不能为空'); return; }
-    if (editingId===null) createArticle(title,content,date,tags);
-    else updateArticle(editingId,title,content,date,tags);
-    closeEditModal();
-  }
+  function saveEdit(){ const title = document.getElementById('editTitle').value.trim(); let content = document.getElementById('editContent').value; const date = document.getElementById('editDate').value; const tags = document.getElementById('editTags').value; if (!title || !content) { alert('标题和内容不能为空'); return; } if (editingId===null) createArticle(title,content,date,tags); else updateArticle(editingId,title,content,date,tags); closeEditModal(); }
   function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
-
-  function insertImageAtCursor() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const base64 = ev.target.result;
-        const imgMarkdown = `![image](${base64})`;
-        const textarea = document.getElementById('editContent');
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const content = textarea.value;
-        const newContent = content.substring(0, start) + imgMarkdown + content.substring(end);
-        textarea.value = newContent;
-        textarea.dispatchEvent(new Event('input'));
-        updateLanguageHint(newContent);
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  }
-  function handleImagePaste(e) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let item of items) {
-      if (item.type.indexOf('image') !== -1) {
-        e.preventDefault();
-        const file = item.getAsFile();
-        if (!file) continue;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const base64 = ev.target.result;
-          const imgMarkdown = `![粘贴图片](${base64})`;
-          const textarea = document.getElementById('editContent');
-          const start = textarea.selectionStart;
-          const end = textarea.selectionEnd;
-          const content = textarea.value;
-          const newContent = content.substring(0, start) + imgMarkdown + content.substring(end);
-          textarea.value = newContent;
-          textarea.dispatchEvent(new Event('input'));
-          updateLanguageHint(newContent);
-        };
-        reader.readAsDataURL(file);
-        break;
-      }
-    }
-  }
-
-  // 后端模拟同步（忽略）
+  function insertImageAtCursor() { const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (ev) => { const base64 = ev.target.result; const imgMarkdown = `![image](${base64})`; const textarea = document.getElementById('editContent'); const start = textarea.selectionStart; const end = textarea.selectionEnd; const content = textarea.value; const newContent = content.substring(0, start) + imgMarkdown + content.substring(end); textarea.value = newContent; textarea.dispatchEvent(new Event('input')); updateLanguageHint(newContent); }; reader.readAsDataURL(file); }; input.click(); }
+  function handleImagePaste(e) { const items = (e.clipboardData || e.originalEvent.clipboardData).items; for (let item of items) { if (item.type.indexOf('image') !== -1) { e.preventDefault(); const file = item.getAsFile(); if (!file) continue; const reader = new FileReader(); reader.onload = (ev) => { const base64 = ev.target.result; const imgMarkdown = `![粘贴图片](${base64})`; const textarea = document.getElementById('editContent'); const start = textarea.selectionStart; const end = textarea.selectionEnd; const content = textarea.value; const newContent = content.substring(0, start) + imgMarkdown + content.substring(end); textarea.value = newContent; textarea.dispatchEvent(new Event('input')); updateLanguageHint(newContent); }; reader.readAsDataURL(file); break; } } }
   async function syncToBackend(action,article){}
   function notifyBackend(action,article){}
-
-  function setupNavigation(){
-    document.getElementById('navHome').addEventListener('click',e=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});});
-    document.getElementById('navAbout').addEventListener('click',e=>{e.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'});});
-    document.getElementById('navArticles').addEventListener('click',e=>{e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'});});
-    document.getElementById('navContact').addEventListener('click',e=>{e.preventDefault(); document.getElementById('contact').scrollIntoView({behavior:'smooth'});});
-  }
-  function initDarkMode(){
-    const dark = localStorage.getItem('darkMode')==='true';
-    const lightTheme = document.getElementById('hljs-light');
-    const darkTheme = document.getElementById('hljs-dark');
-    if(dark){
-      document.body.classList.add('dark');
-      document.getElementById('themeToggle').innerHTML='☀️ 亮色';
-      if(lightTheme) lightTheme.disabled = true;
-      if(darkTheme) darkTheme.disabled = false;
-    } else {
-      document.body.classList.remove('dark');
-      document.getElementById('themeToggle').innerHTML='🌙 暗色';
-      if(lightTheme) lightTheme.disabled = false;
-      if(darkTheme) darkTheme.disabled = true;
-    }
-  }
-  function toggleDarkMode(){
-    if(document.body.classList.contains('dark')){
-      localStorage.setItem('darkMode','false');
-      initDarkMode();
-    } else {
-      localStorage.setItem('darkMode','true');
-      initDarkMode();
-    }
-  }
+  function setupNavigation(){ document.getElementById('navHome').addEventListener('click',e=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});}); document.getElementById('navAbout').addEventListener('click',e=>{e.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'});}); document.getElementById('navArticles').addEventListener('click',e=>{e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'});}); document.getElementById('navContact').addEventListener('click',e=>{e.preventDefault(); document.getElementById('contact').scrollIntoView({behavior:'smooth'});}); }
+  function initDarkMode(){ const dark = localStorage.getItem('darkMode')==='true'; const lightTheme = document.getElementById('hljs-light'); const darkTheme = document.getElementById('hljs-dark'); if(dark){ document.body.classList.add('dark'); document.getElementById('themeToggle').innerHTML='☀️ 亮色'; if(lightTheme) lightTheme.disabled = true; if(darkTheme) darkTheme.disabled = false; } else { document.body.classList.remove('dark'); document.getElementById('themeToggle').innerHTML='🌙 暗色'; if(lightTheme) lightTheme.disabled = false; if(darkTheme) darkTheme.disabled = true; } }
+  function toggleDarkMode(){ if(document.body.classList.contains('dark')){ localStorage.setItem('darkMode','false'); initDarkMode(); } else { localStorage.setItem('darkMode','true'); initDarkMode(); } }
   function handleScroll(){ const btn=document.getElementById('backToTop'); if(window.scrollY>300) btn.style.display='flex'; else btn.style.display='none'; }
   function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
   function escapeHtml(str){ return str.replace(/[&<>]/g,m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
   function changeSort(value){ currentSort=value; currentPage=1; renderArticles(); }
-
-  function initMobileSidebar() {
-    const toggleBtn = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (toggleBtn && sidebar) {
-      toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
-      document.querySelector('.main-content').addEventListener('click', () => sidebar.classList.remove('open'));
-    }
-  }
-
-  function init(){
-    loadDataFromStorage();
-    sortArticles();
-    adjustPageAfterDataChange();
-    renderArticles();
-    initDarkMode();
-    setupNavigation();
-    window.addEventListener('scroll',handleScroll);
-    document.getElementById('backToTop').addEventListener('click',scrollToTop);
-    document.getElementById('themeToggle').addEventListener('click',toggleDarkMode);
-    document.getElementById('newPostBtn').addEventListener('click',()=>openEditModal(null));
-    document.getElementById('cancelEditBtn').addEventListener('click',closeEditModal);
-    document.getElementById('saveEditBtn').addEventListener('click',saveEdit);
-    document.getElementById('deleteArticleBtn').addEventListener('click',handleDeleteFromModal);
-    document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); });
-    const contentTextarea = document.getElementById('editContent');
-    contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value));
-    contentTextarea.addEventListener('paste', handleImagePaste);
-    document.getElementById('sortSelect').value = currentSort;
-    document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
-    document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter);
-    const fullscreenEditBtn = document.getElementById('fullscreenEditBtn');
-    if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle);
-    const closeFullscreenBtn = document.querySelector('.close-fullscreen');
-    if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen);
-    document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); });
-    document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor);
-    initSearch();
-    initMobileSidebar();
-  }
+  function initMobileSidebar() { const toggleBtn = document.getElementById('menuToggle'); const sidebar = document.getElementById('sidebar'); if (toggleBtn && sidebar) { toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open')); document.querySelector('.main-content').addEventListener('click', () => sidebar.classList.remove('open')); } }
+  function init(){ loadDataFromStorage(); sortArticles(); adjustPageAfterDataChange(); renderArticles(); initDarkMode(); setupNavigation(); window.addEventListener('scroll',handleScroll); document.getElementById('backToTop').addEventListener('click',scrollToTop); document.getElementById('themeToggle').addEventListener('click',toggleDarkMode); document.getElementById('newPostBtn').addEventListener('click',()=>openEditModal(null)); document.getElementById('cancelEditBtn').addEventListener('click',closeEditModal); document.getElementById('saveEditBtn').addEventListener('click',saveEdit); document.getElementById('deleteArticleBtn').addEventListener('click',handleDeleteFromModal); document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); }); const contentTextarea = document.getElementById('editContent'); contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value)); contentTextarea.addEventListener('paste', handleImagePaste); document.getElementById('sortSelect').value = currentSort; document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value)); document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter); const fullscreenEditBtn = document.getElementById('fullscreenEditBtn'); if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle); const closeFullscreenBtn = document.querySelector('.close-fullscreen'); if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen); document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); }); document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor); initSearch(); initMobileSidebar(); }
   init();
 </script>
 </body>
