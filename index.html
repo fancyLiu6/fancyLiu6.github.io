@@ -10,7 +10,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d1d1f'/%3E%3Cpath fill='%23ffffff' d='M32 16c-8.8 0-16 7.2-16 16 0 7.1 4.6 13.1 10.9 15.2.8.1 1.1-.3 1.1-.8 0-.4 0-1.4-.1-2.8-4.4 1-5.3-2.1-5.3-2.1-.7-1.8-1.8-2.3-1.8-2.3-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.4 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.3-3.6-.4-7.4-1.8-7.4-8 0-1.8.6-3.2 1.7-4.4-.2-.4-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.4 3.8.2 4.2 1 1.2 1.7 2.6 1.7 4.4 0 6.2-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3 0 2.2-.1 3.9-.1 4.4 0 .4.3.9 1.1.8C43.4 45.1 48 39.1 48 32c0-8.8-7.2-16-16-16z'/%3E%3C/svg%3E">
 <style>
-/* ========== 全局布局：侧边栏 + 主内容 ========== */
 * {
   box-sizing: border-box;
 }
@@ -289,6 +288,63 @@ body.dark .fullscreen-content {
 body.dark .progress-bar {
   background: #0a84ff;
 }
+/* 优化后的按钮组：放在主内容区右上角，不干扰右侧目录 */
+.fullscreen-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+.fullscreen-actions button {
+  border: none;
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+.fullscreen-actions .edit-btn {
+  background: #0071e3;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.fullscreen-actions .edit-btn:hover {
+  background: #005bb5;
+  transform: scale(1.02);
+}
+.fullscreen-actions .copy-link-btn {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+.fullscreen-actions .copy-link-btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+.fullscreen-actions .close-btn {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+.fullscreen-actions .close-btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+body.dark .fullscreen-actions .edit-btn {
+  background: #0a84ff;
+}
+body.dark .fullscreen-actions .edit-btn:hover {
+  background: #0063ce;
+}
+body.dark .fullscreen-actions .copy-link-btn,
+body.dark .fullscreen-actions .close-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+body.dark .fullscreen-actions .copy-link-btn:hover,
+body.dark .fullscreen-actions .close-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
 .fullscreen-toc {
   width: 260px;
   padding: 40px 20px;
@@ -347,63 +403,43 @@ body.dark .fullscreen-meta {
   border-radius: 12px;
   margin: 12px 0;
 }
-.fullscreen-actions {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 12px;
-  z-index: 10;
-}
-.fullscreen-actions button {
-  border: none;
-  border-radius: 30px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-}
-.fullscreen-actions .edit-btn {
-  background: #0071e3;
-  color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.fullscreen-actions .edit-btn:hover {
-  background: #005bb5;
-  transform: scale(1.02);
-}
-.fullscreen-actions .copy-link-btn {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-.fullscreen-actions .copy-link-btn:hover {
-  background: rgba(0,0,0,0.7);
-}
-.fullscreen-actions .close-btn {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-.fullscreen-actions .close-btn:hover {
-  background: rgba(0,0,0,0.7);
-}
-body.dark .fullscreen-actions .edit-btn {
-  background: #0a84ff;
-}
-body.dark .fullscreen-actions .edit-btn:hover {
-  background: #0063ce;
-}
-body.dark .fullscreen-actions .copy-link-btn,
-body.dark .fullscreen-actions .close-btn {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-body.dark .fullscreen-actions .copy-link-btn:hover,
-body.dark .fullscreen-actions .close-btn:hover {
-  background: rgba(255,255,255,0.3);
-}
 @media (max-width: 800px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    width: 260px;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .fullscreen-modal {
+    left: 0;
+  }
+  .fullscreen-main {
+    padding: 20px;
+  }
+  .fullscreen-toc {
+    display: none;
+  }
   .fullscreen-actions {
     top: 10px;
     right: 10px;
@@ -413,6 +449,20 @@ body.dark .fullscreen-actions .close-btn:hover {
     padding: 6px 12px;
     font-size: 12px;
   }
+  .editor-preview-wrapper {
+    flex-direction: column;
+  }
+  .preview-pane {
+    max-height: 300px;
+  }
+}
+@media (min-width: 801px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+.menu-toggle {
+  display: none;
 }
 .post .post-content {
   font-size: 17px;
@@ -758,7 +808,7 @@ nav a:hover, .nav-btn:hover {
 #backToTop:hover {
   background: black;
 }
-/* 编辑模态框样式 - 支持预览分屏 */
+/* 编辑模态框样式 */
 .modal {
   display: none;
   position: fixed;
@@ -905,58 +955,6 @@ body.dark .preview-pane {
 @keyframes blink {
   50% { opacity: 0; }
 }
-@media (max-width: 800px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
-    width: 260px;
-  }
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .menu-toggle {
-    display: block;
-    position: fixed;
-    left: 20px;
-    top: 20px;
-    z-index: 1100;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .fullscreen-modal {
-    left: 0;
-  }
-  .fullscreen-main {
-    padding: 20px;
-  }
-  .fullscreen-toc {
-    display: none;
-  }
-  .editor-preview-wrapper {
-    flex-direction: column;
-  }
-  .preview-pane {
-    max-height: 300px;
-  }
-}
-@media (min-width: 801px) {
-  .menu-toggle {
-    display: none;
-  }
-}
-.menu-toggle {
-  display: none;
-}
 @media (max-width: 600px) {
   .post {
     padding: 25px 20px;
@@ -1028,7 +1026,6 @@ body.dark .preview-pane {
   <p>🐦 Twitter: @fancy_dev</p>
 </div>
 <button id="backToTop">↑</button>
-<!-- 编辑/新建模态框（增加存为草稿按钮） -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">编辑文章</h3>
@@ -1063,11 +1060,15 @@ body.dark .preview-pane {
     </div>
   </div>
 </div>
-<!-- 全屏阅读模态框（增加复制链接按钮和进度条） -->
 <div id="fullscreenModal" class="fullscreen-modal">
   <div class="fullscreen-content">
     <div class="fullscreen-main">
       <div class="progress-bar" id="readingProgress"></div>
+      <div class="fullscreen-actions">
+        <button id="fullscreenEditBtn" class="edit-btn">✏️ 编辑</button>
+        <button id="copyLinkBtn" class="copy-link-btn">🔗 复制链接</button>
+        <button class="close-btn close-fullscreen">关闭</button>
+      </div>
       <h2 id="fullscreenTitle"></h2>
       <div class="fullscreen-meta">
         <span id="fullscreenDate"></span>
@@ -1080,27 +1081,19 @@ body.dark .preview-pane {
       <div style="font-weight:600; margin-bottom:12px;">📑 目录</div>
       <div id="tocContent"></div>
     </div>
-    <div class="fullscreen-actions">
-      <button id="fullscreenEditBtn" class="edit-btn">✏️ 编辑</button>
-      <button id="copyLinkBtn" class="copy-link-btn">🔗 复制链接</button>
-      <button class="close-btn close-fullscreen">关闭</button>
-    </div>
   </div>
 </div>
 </div>
 <script>
-  // ===================== 配置 =====================
   marked.setOptions({ breaks: true, gfm: true, highlight: function(code, lang) { if (lang && hljs.getLanguage(lang)) { try { return hljs.highlight(code, { language: lang }).value; } catch(e) {} } return code; } });
   function sanitizeHtml(html) { return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/on\w+="[^"]*"/gi, '').replace(/on\w+='[^']*'/gi, ''); }
   function renderMarkdown(markdown) { if (!markdown) return ''; let rawHtml = marked.parse(markdown); if (typeof rawHtml === 'string') { return sanitizeHtml(rawHtml); } return sanitizeHtml(rawHtml); }
   function extractTOC(markdown) { const lines = markdown.split('\n'); const toc = []; lines.forEach(line => { const match = line.match(/^(#{1,2})\s+(.*)$/); if (match) { const level = match[1].length; const title = match[2].trim(); const id = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase(); toc.push({ level, title, id }); } }); return toc; }
   function renderToc(toc) { const container = document.getElementById('tocContent'); if (!container) return; if (toc.length === 0) { container.innerHTML = '<div style="color:gray;">无标题</div>'; return; } let html = '<ul style="list-style:none; padding-left:0;">'; toc.forEach(item => { const indent = item.level === 2 ? 'padding-left:16px;' : ''; html += `<li style="margin-bottom:8px; ${indent}"><a class="toc-link" data-id="${item.id}" style="cursor:pointer;">${escapeHtml(item.title)}</a></li>`; }); html += '</ul>'; container.innerHTML = html; document.querySelectorAll('.toc-link').forEach(link => { link.addEventListener('click', (e) => { const id = link.getAttribute('data-id'); const target = document.getElementById(`toc-${id}`); if (target) { target.scrollIntoView({ behavior: 'smooth' }); } else { const headings = document.querySelectorAll('#fullscreenBody h1, #fullscreenBody h2'); for (let h of headings) { if (h.textContent.trim() === link.textContent.trim()) { h.scrollIntoView({ behavior: 'smooth' }); break; } } } }); }); }
   function detectLanguage(text) { if (!text.trim()) return "未知"; const lower = text.toLowerCase(); if (/def\s+\w+\s*\(|import\s+\w+|print\s*\(/m.test(lower)) return "Python"; if (/function\s*\(|const\s+\w+\s*=/m.test(lower)) return "JavaScript"; if (/public\s+class|System\.out\.println/m.test(lower)) return "Java"; if (/#include\s*[<"]|int\s+main/m.test(lower)) return "C/C++"; if (/package\s+main|func\s+main/m.test(lower)) return "Go"; if (/<(!DOCTYPE|html|head)/i.test(text)) return "HTML"; if (/^[\w-]+:\s|^\s+-\s+[\w-]+:/m.test(text)) return "YAML"; if (/^\s*\{\s*".*"\s*:/m.test(text)) return "JSON"; if (/^#!\/bin\/bash|echo\s+["']/m.test(lower)) return "Shell"; return "纯文本"; }
-  // ===================== 文章数据与草稿 =====================
   let totalArticles = []; let currentPage = 1; const pageSize = 5; let currentSort = 'created_desc'; let currentTagFilter = null;
   const defaultArticles = [ { id: 1, title: "我的第一篇文章", content: "# 欢迎\n这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。\n\n- 支持 Markdown 语法\n- **粗体**、*斜体*\n- `代码片段`", date: "2025-04-01", views: 128, tags: ["生活", "杂谈"], pinned: false, createdAt: 1743494400000, updatedAt: 1743494400000 }, { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，`dict2items` 可以方便遍历字典，结合 `loop` 使用。\n\n```yaml\n- name: 遍历字典\n  debug:\n    msg: \"{{ item.key }}: {{ item.value }}\"\n  loop: \"{{ my_dict | dict2items }}\"\n```", date: "2025-04-15", views: 86, tags: ["Ansible", "自动化"], pinned: false, createdAt: 1744704000000, updatedAt: 1744704000000 }, { id: 3, title: "SRE 的北极星指标", content: "## SLO（服务水平目标）\nSLO 是 SRE 的核心指标，直接反映用户对系统稳定性的感知。\n\n> 错误预算 = 1 - SLO", date: "2025-04-20", views: 203, tags: ["SRE", "稳定性"], pinned: true, createdAt: 1745193600000, updatedAt: 1745193600000 }, { id: 4, title: "Ubuntu 静态IP配置", content: "使用 `netplan` 轻松设置固定IP，别忘了 `apply`。\n\n```bash\nsudo netplan apply\n```", date: "2025-04-22", views: 55, tags: ["Linux", "网络"], pinned: false, createdAt: 1745366400000, updatedAt: 1745366400000 }, { id: 5, title: "使用 Ansible 管理 NFS", content: "通过 `mount` 模块批量挂载，并通过 `lineinfile` 配置 `/etc/fstab`。\n\n![示例图片](https://via.placeholder.com/400)", date: "2025-04-25", views: 42, tags: ["Ansible", "存储"], pinned: false, createdAt: 1745625600000, updatedAt: 1745625600000 } ];
   const moreArticles = [ { id: 6, title: "一文读懂 when 语句", content: "Ansible中 `when` 用于条件判断，支持多种表达式。\n\n```yaml\nwhen: ansible_os_family == \"Debian\"\n```", date: "2025-04-26", views: 31, tags: ["Ansible"], pinned: false, createdAt: 1745712000000, updatedAt: 1745712000000 }, { id: 7, title: "注册变量和 changed 判断", content: "`register` 捕获任务输出，通过 `when` 结合 `changed` 做条件触发。", date: "2025-04-27", views: 27, tags: ["Ansible"], pinned: false, createdAt: 1745798400000, updatedAt: 1745798400000 }, { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, tags: ["监控", "Prometheus"], pinned: false, createdAt: 1745884800000, updatedAt: 1745884800000 } ];
-  // 草稿数据存储
   let drafts = [];
   function loadDrafts() { const stored = localStorage.getItem('blog_drafts'); if (stored) drafts = JSON.parse(stored); else drafts = []; }
   function saveDrafts() { localStorage.setItem('blog_drafts', JSON.stringify(drafts)); renderDraftsList(); }
@@ -1110,7 +1103,6 @@ body.dark .preview-pane {
   function publishDraft(draftId) { const draft = drafts.find(d => d.id == draftId); if(draft) { createArticle(draft.title, draft.content, draft.date, draft.tags.join(','), false); deleteDraft(draftId); } }
   function renderDraftsList() { const container = document.getElementById('draftList'); if(!container) return; if(drafts.length === 0) { container.innerHTML = '<li style="color:gray;">暂无草稿</li>'; return; } let html = ''; drafts.forEach(d => { html += `<li><span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(d.title) || '无标题'}</span> <button class="edit-draft" data-id="${d.id}">✏️</button> <button class="publish-draft" data-id="${d.id}">📤</button> <button class="del-draft" data-id="${d.id}">🗑️</button></li>`; }); container.innerHTML = html; document.querySelectorAll('.edit-draft').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.getAttribute('data-id')); openDraftModal(id); })); document.querySelectorAll('.publish-draft').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.getAttribute('data-id')); if(confirm('发布后将转为正式文章，草稿将被删除，是否继续？')) publishDraft(id); })); document.querySelectorAll('.del-draft').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.getAttribute('data-id')); if(confirm('删除草稿？')) deleteDraft(id); })); }
   function openDraftModal(draftId) { const draft = drafts.find(d => d.id == draftId); if(!draft) return; editingId = null; currentEditingDraftId = draftId; document.getElementById('editTitle').value = draft.title || ''; document.getElementById('editTags').value = draft.tags ? draft.tags.join(', ') : ''; document.getElementById('editContent').value = draft.content || ''; document.getElementById('editDate').value = draft.date; document.getElementById('editPinned').checked = false; document.getElementById('modalTitle').innerText = '编辑草稿'; document.getElementById('deleteArticleBtn').style.display = 'block'; document.getElementById('deleteArticleBtn').onclick = () => { if(confirm('删除草稿？')) deleteDraft(draftId); closeEditModal(); }; document.getElementById('saveEditBtn').onclick = () => { const title = document.getElementById('editTitle').value.trim(); const content = document.getElementById('editContent').value; const date = document.getElementById('editDate').value; const tags = document.getElementById('editTags').value; if(!title || !content) { alert('标题和内容不能为空'); return; } updateDraft(draftId, title, content, tags, date); closeEditModal(); }; document.getElementById('saveDraftBtn').onclick = () => { const title = document.getElementById('editTitle').value.trim(); const content = document.getElementById('editContent').value; const date = document.getElementById('editDate').value; const tags = document.getElementById('editTags').value; if(!title || !content) { alert('标题和内容不能为空'); return; } updateDraft(draftId, title, content, tags, date); closeEditModal(); }; updatePreview(document.getElementById('editContent').value); document.getElementById('editModal').style.display = 'flex'; }
-  // 正式文章CRUD
   function countWords(markdown) { const plainText = markdown.replace(/<[^>]*>/g, '').replace(/[#*_`\[\]()>]/g, ''); return plainText.replace(/\s+/g, '').length; }
   function updateStats() { document.getElementById('totalArticlesCount').innerText = totalArticles.length; const totalWords = totalArticles.reduce((sum, art) => sum + countWords(art.content), 0); document.getElementById('totalWordsCount').innerText = totalWords; }
   function loadDataFromStorage() { const stored = localStorage.getItem('blog_articles'); if (stored) totalArticles = JSON.parse(stored); else { totalArticles = [...defaultArticles]; const existIds = new Set(totalArticles.map(a=>a.id)); for (let art of moreArticles) if (!existIds.has(art.id)) totalArticles.push(art); } let needSave = false; totalArticles = totalArticles.map(art => { let updated = art; if (!art.createdAt) { needSave = true; let ts = Date.parse(art.date); if (isNaN(ts)) ts = 1743000000000 + art.id*86400000; updated.createdAt = ts; } if (!art.updatedAt) { needSave = true; updated.updatedAt = updated.createdAt; } if (art.views === undefined) { needSave = true; updated.views = 0; } if (!art.tags) { needSave = true; updated.tags = []; } if (art.pinned === undefined) { needSave = true; updated.pinned = false; } return updated; }); if (needSave) saveArticlesToStorage(); updateStats(); }
@@ -1124,15 +1116,12 @@ body.dark .preview-pane {
   function scrollToArticle(articleId) { const articleCard = document.querySelector(`.post[data-id="${articleId}"]`); if (articleCard) articleCard.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   function initSearch() { const searchInput = document.getElementById('searchInput'); if (!searchInput) return; searchInput.addEventListener('input', (e) => { currentSearchKeyword = e.target.value; renderSidebar(); }); }
   let currentFullscreenArticleId = null;
-  function showFullscreenArticle(article) { currentFullscreenArticleId = article.id; document.getElementById('fullscreenTitle').innerText = article.title; document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`; document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`; const tagsHtml = article.tags && article.tags.length ? `🏷️ ${article.tags.join(', ')}` : ''; document.getElementById('fullscreenTags').innerHTML = tagsHtml; const renderedHtml = renderMarkdown(article.content); const tempDiv = document.createElement('div'); tempDiv.innerHTML = renderedHtml; const headings = tempDiv.querySelectorAll('h1, h2'); headings.forEach((h) => { const text = h.textContent.trim(); const id = text.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase(); h.id = `toc-${id}`; }); document.getElementById('fullscreenBody').innerHTML = tempDiv.innerHTML; const toc = extractTOC(article.content); renderToc(toc); document.getElementById('fullscreenModal').style.display = 'flex'; document.querySelectorAll('#fullscreenBody pre code').forEach(block => { hljs.highlightElement(block); }); // 重置进度条
-    const scrollDiv = document.querySelector('.fullscreen-main'); if(scrollDiv) { scrollDiv.scrollTop = 0; updateProgress(); } }
+  function showFullscreenArticle(article) { currentFullscreenArticleId = article.id; document.getElementById('fullscreenTitle').innerText = article.title; document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`; document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`; const tagsHtml = article.tags && article.tags.length ? `🏷️ ${article.tags.join(', ')}` : ''; document.getElementById('fullscreenTags').innerHTML = tagsHtml; const renderedHtml = renderMarkdown(article.content); const tempDiv = document.createElement('div'); tempDiv.innerHTML = renderedHtml; const headings = tempDiv.querySelectorAll('h1, h2'); headings.forEach((h) => { const text = h.textContent.trim(); const id = text.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-').toLowerCase(); h.id = `toc-${id}`; }); document.getElementById('fullscreenBody').innerHTML = tempDiv.innerHTML; const toc = extractTOC(article.content); renderToc(toc); document.getElementById('fullscreenModal').style.display = 'flex'; document.querySelectorAll('#fullscreenBody pre code').forEach(block => { hljs.highlightElement(block); }); const scrollDiv = document.querySelector('.fullscreen-main'); if(scrollDiv) { scrollDiv.scrollTop = 0; updateProgress(); } }
   function closeFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
   function editCurrentArticle() { if (currentFullscreenArticleId !== null) { closeFullscreen(); openEditModal(currentFullscreenArticleId); } }
   function copyArticleLink() { if (currentFullscreenArticleId !== null) { const url = new URL(window.location.href); url.searchParams.set('id', currentFullscreenArticleId); navigator.clipboard.writeText(url.toString()); alert('链接已复制到剪贴板'); } }
-  // 阅读进度条
   function updateProgress() { const scrollDiv = document.querySelector('.fullscreen-main'); if(!scrollDiv) return; const scrollTop = scrollDiv.scrollTop; const scrollHeight = scrollDiv.scrollHeight - scrollDiv.clientHeight; const percent = (scrollTop / scrollHeight) * 100; const progressBar = document.getElementById('readingProgress'); if(progressBar) progressBar.style.width = percent + '%'; }
   function initProgressListener() { const scrollDiv = document.querySelector('.fullscreen-main'); if(scrollDiv) { scrollDiv.addEventListener('scroll', updateProgress); } }
-  // 页面加载时检查URL参数
   function checkUrlForArticle() { const params = new URLSearchParams(window.location.search); const id = params.get('id'); if(id) { const article = totalArticles.find(a => a.id == id); if(article) { setTimeout(() => showFullscreenArticle(article), 100); } } }
   function renderArticles() { let filtered = [...totalArticles]; if (currentTagFilter) { filtered = filtered.filter(art => art.tags && art.tags.includes(currentTagFilter)); } sortArticles(); const start = (currentPage-1)*pageSize; const pageArticles = filtered.slice(start, start+pageSize); const container = document.getElementById('postsContainer'); if (!container) return; if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>'; document.getElementById('paginationContainer').innerHTML = ''; renderSidebar(); return; } let html = ''; for (let art of pageArticles) { const wc = countWords(art.content); const rendered = renderMarkdown(art.content); const tagsHtml = art.tags && art.tags.length ? `<div class="post-tags">${art.tags.map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''; const pinnedBadge = art.pinned ? '<span class="pinned-badge">📌 置顶</span>' : ''; html += `<section class="post" data-id="${art.id}"><h2>${escapeHtml(art.title)}${pinnedBadge}</h2><div class="post-content">${rendered}</div>${tagsHtml}<div class="post-meta"><div class="meta-left"><span>📅 ${art.date}</span><span class="read-count" data-id="${art.id}">👀 ${art.views} 次阅读</span><span>📝 ${wc} 字</span></div><div class="post-actions"><button class="edit-btn" data-id="${art.id}">✏️ 编辑</button><button class="delete-btn" data-id="${art.id}">🗑️ 删除</button></div></div></section>`; } container.innerHTML = html; document.querySelectorAll('.post').forEach(card => { card.addEventListener('click', (e) => { if (e.target.closest('.edit-btn') || e.target.closest('.delete-btn')) return; const id = parseInt(card.getAttribute('data-id')); const article = totalArticles.find(a => a.id === id); if (article) showFullscreenArticle(article); }); }); document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(btn.dataset.id); openEditModal(id); })); document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(btn.dataset.id); deleteArticle(id); })); document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',(e)=>{ e.stopPropagation(); const id = parseInt(el.dataset.id); incrementView(id); })); document.querySelectorAll('.post-content pre code').forEach(block => { hljs.highlightElement(block); }); renderPagination(filtered.length); renderSidebar(); renderTagCloud(); }
   function renderPagination(total) { const totalPages = Math.ceil(total / pageSize); const container = document.getElementById('paginationContainer'); if (totalPages<=1) { container.innerHTML = ''; return; } let html = ''; if (currentPage>1) html += `<button class="page-btn" data-page="${currentPage-1}">← 上一页</button>`; for (let i=1;i<=totalPages;i++) html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`; if (currentPage<totalPages) html += `<button class="page-btn" data-page="${currentPage+1}">下一页 →</button>`; container.innerHTML = html; container.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{ const page = parseInt(btn.dataset.page); if (!isNaN(page) && page!==currentPage) { currentPage=page; renderArticles(); document.getElementById('postsContainer').scrollIntoView({behavior:'smooth'}); } })); }
@@ -1142,7 +1131,6 @@ body.dark .preview-pane {
   function updateArticle(id,title,content,date,tags,pinned){ const idx = totalArticles.findIndex(a=>a.id===id); if (idx!==-1) { totalArticles[idx].title = title; totalArticles[idx].content = content; totalArticles[idx].date = date; totalArticles[idx].updatedAt = Date.now(); totalArticles[idx].tags = tags ? tags.split(',').map(s=>s.trim()).filter(s=>s) : []; totalArticles[idx].pinned = pinned; saveArticlesToStorage(); notifyBackend('update',totalArticles[idx]); sortArticles(); renderArticles(); } }
   function deleteArticle(id){ if (!confirm("确定要删除吗？")) return; totalArticles = totalArticles.filter(a=>a.id!==id); saveArticlesToStorage(); notifyBackend('delete',{id}); adjustPageAfterDataChange(); renderArticles(); }
   function incrementView(id){ const article = totalArticles.find(a=>a.id===id); if (article) { article.views++; saveArticlesToStorage(); renderArticles(); } }
-  // 编辑模态框通用（正式文章）
   let editingId = null; let currentEditingDraftId = null;
   function openEditModal(id=null) { editingId = id; currentEditingDraftId = null; const modal = document.getElementById('editModal'); const modalTitle = document.getElementById('modalTitle'); const deleteBtn = document.getElementById('deleteArticleBtn'); const contentTextarea = document.getElementById('editContent'); if (id===null) { modalTitle.innerText = '新建文章'; deleteBtn.style.display = 'none'; document.getElementById('editTitle').value = ''; document.getElementById('editTags').value = ''; contentTextarea.value = ''; document.getElementById('editDate').value = new Date().toISOString().slice(0,10); document.getElementById('editPinned').checked = false; } else { modalTitle.innerText = '编辑文章'; deleteBtn.style.display = 'block'; const article = totalArticles.find(a=>a.id===id); if (article) { document.getElementById('editTitle').value = article.title; document.getElementById('editTags').value = article.tags ? article.tags.join(', ') : ''; contentTextarea.value = article.content; document.getElementById('editDate').value = article.date; document.getElementById('editPinned').checked = article.pinned || false; } } updateLanguageHint(contentTextarea.value); updatePreview(contentTextarea.value); modal.style.display = 'flex'; loadTempDraft(); if (draftTimer) clearInterval(draftTimer); draftTimer = setInterval(saveTempDraft, 30000); setupDragDrop(); }
   function closeEditModal() { clearTempDraft(); if (draftTimer) clearInterval(draftTimer); document.getElementById('editModal').style.display = 'none'; editingId = null; currentEditingDraftId = null; }
@@ -1155,7 +1143,7 @@ body.dark .preview-pane {
   function compressAndInsertImage(file) { const reader = new FileReader(); reader.onload = (ev) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let width = img.width, height = img.height; const maxWidth = 800; if(width > maxWidth) { height = (height * maxWidth) / width; width = maxWidth; } canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); const imgMarkdown = `![压缩图片](${compressedBase64})`; const textarea = document.getElementById('editContent'); const start = textarea.selectionStart; const end = textarea.selectionEnd; const content = textarea.value; const newContent = content.substring(0, start) + imgMarkdown + content.substring(end); textarea.value = newContent; textarea.dispatchEvent(new Event('input')); updateLanguageHint(newContent); alert('图片已压缩并插入 (最大宽度800px)'); }; img.src = ev.target.result; }; reader.readAsDataURL(file); }
   function setupDragDrop() { const textarea = document.getElementById('editContent'); if(!textarea) return; textarea.addEventListener('dragover', (e) => { e.preventDefault(); }); textarea.addEventListener('drop', (e) => { e.preventDefault(); const files = e.dataTransfer.files; if(files.length && files[0].type.startsWith('image/')) { compressAndInsertImage(files[0]); } }); }
   function handleImagePaste(e) { const items = (e.clipboardData || e.originalEvent.clipboardData).items; for (let item of items) { if (item.type.indexOf('image') !== -1) { e.preventDefault(); const file = item.getAsFile(); if (!file) continue; compressAndInsertImage(file); break; } } }
-  let draftTimer = null; let tempDraftKey = null;
+  let draftTimer = null;
   function saveTempDraft() { if (editingId === undefined) return; const key = editingId === null ? 'new' : editingId; const draftKey = `temp_draft_${key}`; const title = document.getElementById('editTitle').value; const tags = document.getElementById('editTags').value; const content = document.getElementById('editContent').value; const date = document.getElementById('editDate').value; const pinned = document.getElementById('editPinned').checked; localStorage.setItem(draftKey, JSON.stringify({ title, tags, content, date, pinned, updatedAt: Date.now() })); }
   function loadTempDraft() { const key = editingId === null ? 'new' : editingId; const draftKey = `temp_draft_${key}`; const saved = localStorage.getItem(draftKey); if(saved) { try { const data = JSON.parse(saved); if(confirm('检测到上次未保存的编辑内容，是否恢复？')) { document.getElementById('editTitle').value = data.title || ''; document.getElementById('editTags').value = data.tags || ''; document.getElementById('editContent').value = data.content || ''; document.getElementById('editDate').value = data.date || new Date().toISOString().slice(0,10); document.getElementById('editPinned').checked = data.pinned || false; updatePreview(data.content || ''); updateLanguageHint(data.content || ''); } localStorage.removeItem(draftKey); } catch(e){} } }
   function clearTempDraft() { const key = editingId === null ? 'new' : editingId; const draftKey = `temp_draft_${key}`; localStorage.removeItem(draftKey); }
@@ -1173,8 +1161,7 @@ body.dark .preview-pane {
   function changeSort(value){ currentSort=value; currentPage=1; renderArticles(); }
   function initMobileSidebar() { const toggleBtn = document.getElementById('menuToggle'); const sidebar = document.getElementById('sidebar'); if (toggleBtn && sidebar) { toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open')); document.querySelector('.main-content').addEventListener('click', () => sidebar.classList.remove('open')); } }
   function init(){
-    loadDataFromStorage(); sortArticles(); adjustPageAfterDataChange(); renderArticles(); loadDrafts(); renderDraftsList(); initDarkMode(); setupNavigation(); window.addEventListener('scroll',handleScroll); document.getElementById('backToTop').addEventListener('click',scrollToTop); document.getElementById('themeToggle').addEventListener('click',toggleDarkMode); document.getElementById('newPostBtn').addEventListener('click',()=>openEditModal(null)); document.getElementById('cancelEditBtn').addEventListener('click',closeEditModal); document.getElementById('saveEditBtn').addEventListener('click',saveEdit); document.getElementById('saveDraftBtn').addEventListener('click',saveAsDraft); document.getElementById('deleteArticleBtn').addEventListener('click',handleDeleteFromModal); document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); }); const contentTextarea = document.getElementById('editContent'); contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value)); contentTextarea.addEventListener('paste', handleImagePaste); document.getElementById('sortSelect').value = currentSort; document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value)); document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter); const fullscreenEditBtn = document.getElementById('fullscreenEditBtn'); if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle); const copyLinkBtn = document.getElementById('copyLinkBtn'); if(copyLinkBtn) copyLinkBtn.addEventListener('click', copyArticleLink); const closeFullscreenBtn = document.querySelector('.close-fullscreen'); if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen); document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); }); document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor); document.getElementById('exportDataBtn').addEventListener('click', exportData); const importBtn = document.getElementById('importDataBtn'); const fileInput = document.getElementById('importFileInput'); importBtn.addEventListener('click', () => fileInput.click()); fileInput.addEventListener('change', (e) => { if (e.target.files.length) importData(e.target.files[0]); fileInput.value = ''; }); window.addEventListener('keydown', handleKeySave); initSearch(); initMobileSidebar(); updateStorageMonitor(); setInterval(updateStorageMonitor, 10000); // 全屏阅读进度监听
-    setInterval(() => { if(document.getElementById('fullscreenModal').style.display === 'flex') initProgressListener(); }, 500); checkUrlForArticle(); }
+    loadDataFromStorage(); sortArticles(); adjustPageAfterDataChange(); renderArticles(); loadDrafts(); renderDraftsList(); initDarkMode(); setupNavigation(); window.addEventListener('scroll',handleScroll); document.getElementById('backToTop').addEventListener('click',scrollToTop); document.getElementById('themeToggle').addEventListener('click',toggleDarkMode); document.getElementById('newPostBtn').addEventListener('click',()=>openEditModal(null)); document.getElementById('cancelEditBtn').addEventListener('click',closeEditModal); document.getElementById('saveEditBtn').addEventListener('click',saveEdit); document.getElementById('saveDraftBtn').addEventListener('click',saveAsDraft); document.getElementById('deleteArticleBtn').addEventListener('click',handleDeleteFromModal); document.getElementById('editModal').addEventListener('click',(e)=>{ if(e.target===document.getElementById('editModal')) closeEditModal(); }); const contentTextarea = document.getElementById('editContent'); contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value)); contentTextarea.addEventListener('paste', handleImagePaste); document.getElementById('sortSelect').value = currentSort; document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value)); document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter); const fullscreenEditBtn = document.getElementById('fullscreenEditBtn'); if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle); const copyLinkBtn = document.getElementById('copyLinkBtn'); if(copyLinkBtn) copyLinkBtn.addEventListener('click', copyArticleLink); const closeFullscreenBtn = document.querySelector('.close-fullscreen'); if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen); document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); }); document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor); document.getElementById('exportDataBtn').addEventListener('click', exportData); const importBtn = document.getElementById('importDataBtn'); const fileInput = document.getElementById('importFileInput'); importBtn.addEventListener('click', () => fileInput.click()); fileInput.addEventListener('change', (e) => { if (e.target.files.length) importData(e.target.files[0]); fileInput.value = ''; }); window.addEventListener('keydown', handleKeySave); initSearch(); initMobileSidebar(); updateStorageMonitor(); setInterval(updateStorageMonitor, 10000); setInterval(() => { if(document.getElementById('fullscreenModal').style.display === 'flex') initProgressListener(); }, 500); checkUrlForArticle(); }
   init();
 </script>
 </body>
