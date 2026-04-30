@@ -131,25 +131,25 @@ body.dark {
 body.dark .stats-card,
 body.dark nav,
 body.dark .modal-content,
-body.dark .info-card,
-body.dark .fullscreen-modal {
+body.dark .info-card {
   background: rgba(30,30,32,0.85);
   border-color: rgba(100,100,110,0.5);
   color: #ffffff;
 }
-/* 全屏模态框样式 */
+/* 全屏阅读模态框 - 占满右侧主内容区域 */
 .fullscreen-modal {
   display: none;
   position: fixed;
-  z-index: 3000;
-  left: 0;
+  left: 280px;
+  right: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.85);
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
   backdrop-filter: blur(20px);
+  z-index: 2000;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 .fullscreen-content {
   background: rgba(255,255,255,0.95);
@@ -157,12 +157,13 @@ body.dark .fullscreen-modal {
   margin: auto;
   padding: 40px 50px;
   border-radius: 32px;
-  max-width: 900px;
-  width: 90%;
-  max-height: 85%;
+  width: 100%;
+  height: 100%;
   overflow-y: auto;
   border: 1px solid rgba(255,255,255,0.8);
   box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
 }
 body.dark .fullscreen-content {
   background: rgba(30,30,32,0.95);
@@ -187,6 +188,8 @@ body.dark .fullscreen-content .fullscreen-meta {
   font-size: 17px;
   line-height: 1.8;
   white-space: pre-wrap;
+  flex: 1;
+  overflow-y: auto;
 }
 .fullscreen-body img {
   max-width: 100%;
@@ -203,6 +206,7 @@ body.dark .fullscreen-content .fullscreen-meta {
   font-weight: 500;
   cursor: pointer;
   margin-top: 30px;
+  align-self: flex-end;
 }
 .close-fullscreen:hover {
   background: #005bb5;
@@ -212,6 +216,47 @@ body.dark .close-fullscreen {
 }
 body.dark .close-fullscreen:hover {
   background: #0063ce;
+}
+/* 移动端适配：侧边栏隐藏时，全屏模态框占满全屏 */
+@media (max-width: 800px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    width: 260px;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .fullscreen-modal {
+    left: 0;
+  }
+}
+@media (min-width: 801px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+.menu-toggle {
+  display: none;
 }
 /* 卡片内图片样式 */
 .post .post-content img {
@@ -610,42 +655,13 @@ nav a:hover, .nav-btn:hover {
 @keyframes blink {
   50% { opacity: 0; }
 }
-@media (max-width: 800px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
-    width: 260px;
+@media (max-width: 600px) {
+  .post {
+    padding: 25px 20px;
   }
-  .main-content {
-    margin-left: 0;
-    width: 100%;
+  .fullscreen-content {
+    padding: 20px;
   }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .menu-toggle {
-    display: block;
-    position: fixed;
-    left: 20px;
-    top: 20px;
-    z-index: 1100;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-}
-@media (min-width: 801px) {
-  .menu-toggle {
-    display: none;
-  }
-}
-.menu-toggle {
-  display: none;
 }
 </style>
 </head>
@@ -726,7 +742,7 @@ nav a:hover, .nav-btn:hover {
   </div>
 </div>
 
-<!-- 全屏阅读模态框 -->
+<!-- 全屏阅读模态框 - 占满右侧区域 -->
 <div id="fullscreenModal" class="fullscreen-modal">
   <div class="fullscreen-content">
     <h2 id="fullscreenTitle"></h2>
@@ -882,7 +898,7 @@ nav a:hover, .nav-btn:hover {
     });
   }
 
-  // 全屏显示文章
+  // 全屏显示文章（右侧区域）
   function showFullscreenArticle(article) {
     document.getElementById('fullscreenTitle').innerText = article.title;
     document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`;
@@ -1175,7 +1191,8 @@ nav a:hover, .nav-btn:hover {
     contentTextarea.addEventListener('paste', handleImagePaste);   // 粘贴图片
     document.getElementById('sortSelect').value = currentSort;
     document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
-    document.querySelector('.close-fullscreen')?.addEventListener('click', closeFullscreen);
+    const closeFullscreenBtn = document.querySelector('.close-fullscreen');
+    if (closeFullscreenBtn) closeFullscreenBtn.addEventListener('click', closeFullscreen);
     document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); });
     document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor);
     initSearch();
