@@ -44,12 +44,41 @@ body.dark .sidebar {
 .sidebar-header {
   font-weight: 600;
   font-size: 18px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 body.dark .sidebar-header {
   border-bottom-color: rgba(255,255,255,0.2);
+}
+/* 搜索框 */
+.search-box {
+  margin-bottom: 20px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 30px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+.search-box input:focus {
+  border-color: #0071e3;
+  background: white;
+}
+body.dark .search-box input {
+  background: rgba(30,30,32,0.8);
+  border-color: rgba(255,255,255,0.2);
+  color: white;
+}
+body.dark .search-box input:focus {
+  border-color: #60a5fa;
+  background: #2c2c2e;
 }
 .tree-nav {
   list-style: none;
@@ -80,6 +109,12 @@ body.dark .tree-nav a {
 }
 body.dark .tree-nav a:hover {
   background: rgba(255,255,255,0.1);
+}
+.search-no-results {
+  padding: 12px;
+  text-align: center;
+  color: #8e8e93;
+  font-size: 13px;
 }
 /* 主内容区域 */
 .main-content {
@@ -179,13 +214,13 @@ body.dark .close-fullscreen:hover {
   background: #0063ce;
 }
 /* 卡片内图片样式 */
-.post p img {
+.post .post-content img {
   max-width: 100%;
   border-radius: 16px;
   margin: 10px 0;
 }
 /* 卡片内文字强制白色（暗色） */
-body.dark .post p,
+body.dark .post .post-content,
 body.dark .info-card p,
 body.dark .stat-label,
 body.dark .meta-left span,
@@ -618,7 +653,11 @@ nav a:hover, .nav-btn:hover {
 <button class="menu-toggle" id="menuToggle">☰ 目录</button>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">📖 文章目录</div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 搜索文章标题...">
+  </div>
   <ul class="tree-nav" id="treeNav"></ul>
+  <div id="searchNoResult" class="search-no-results" style="display: none;">未找到相关文章</div>
 </aside>
 <div class="main-content">
 <header>
@@ -664,7 +703,7 @@ nav a:hover, .nav-btn:hover {
 
 <button id="backToTop">↑</button>
 
-<!-- 编辑/新建模态框 增加图片上传按钮 -->
+<!-- 编辑/新建模态框 -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">编辑文章</h3>
@@ -704,7 +743,6 @@ nav a:hover, .nav-btn:hover {
 <script>
   // ---------- 安全 HTML 渲染 (过滤 script 标签) ----------
   function sanitizeHtml(html) {
-    // 简单移除 <script> 标签及其内容，可扩展
     return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
                .replace(/on\w+="[^"]*"/gi, '')
                .replace(/on\w+='[^']*'/gi, '');
@@ -749,7 +787,6 @@ nav a:hover, .nav-btn:hover {
   ];
 
   function countWords(text) {
-    // 移除 HTML 标签后统计纯文本字数
     const plainText = text.replace(/<[^>]*>/g, '');
     return plainText.replace(/\s+/g, '').length;
   }
@@ -790,24 +827,35 @@ nav a:hover, .nav-btn:hover {
     else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt);
   }
 
-  // 渲染侧边栏导航树
+  // ---------- 侧边栏渲染（支持搜索过滤）----------
+  let currentSearchKeyword = '';
   function renderSidebar() {
+    let filteredArticles = totalArticles;
+    if (currentSearchKeyword.trim() !== '') {
+      const kw = currentSearchKeyword.trim().toLowerCase();
+      filteredArticles = totalArticles.filter(art => art.title.toLowerCase().includes(kw));
+    }
     const container = document.getElementById('treeNav');
+    const noResultDiv = document.getElementById('searchNoResult');
     if (!container) return;
-    if (totalArticles.length === 0) {
-      container.innerHTML = '<li style="color:gray;">暂无文章</li>';
+    if (filteredArticles.length === 0) {
+      container.innerHTML = '';
+      noResultDiv.style.display = 'block';
       return;
     }
+    noResultDiv.style.display = 'none';
     let html = '';
-    for (let art of totalArticles) {
+    for (let art of filteredArticles) {
       html += `<li><a data-id="${art.id}" class="nav-link">${escapeHtml(art.title)}</a></li>`;
     }
     container.innerHTML = html;
+    // 绑定点击跳转
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
         const id = parseInt(link.getAttribute('data-id'));
+        const article = totalArticles.find(a => a.id === id);
+        if (!article) return;
         const index = totalArticles.findIndex(a => a.id === id);
-        if (index === -1) return;
         const targetPage = Math.floor(index / pageSize) + 1;
         if (targetPage !== currentPage) {
           currentPage = targetPage;
@@ -825,6 +873,17 @@ nav a:hover, .nav-btn:hover {
     if (articleCard) articleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // 搜索输入处理
+  function initSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    searchInput.addEventListener('input', (e) => {
+      currentSearchKeyword = e.target.value;
+      renderSidebar();
+    });
+  }
+
+  // 全屏显示文章
   function showFullscreenArticle(article) {
     document.getElementById('fullscreenTitle').innerText = article.title;
     document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`;
@@ -894,7 +953,7 @@ nav a:hover, .nav-btn:hover {
       incrementView(id);
     }));
     renderPagination();
-    renderSidebar();
+    renderSidebar(); // 刷新侧边栏（可能因排序改变)
   }
 
   function renderPagination() {
@@ -980,7 +1039,6 @@ nav a:hover, .nav-btn:hover {
     }
     updateLanguageHint(contentTextarea.value);
     modal.style.display = 'flex';
-    // 重新挂载图片插入事件（因为textarea可能变化，但事件委托已处理）
   }
   function updateLanguageHint(text){ document.getElementById('languageHint').innerHTML = `🔍 检测到代码类型：${detectLanguage(text)}`; }
   function closeEditModal(){ document.getElementById('editModal').style.display='none'; editingId=null; }
@@ -989,7 +1047,6 @@ nav a:hover, .nav-btn:hover {
     let content = document.getElementById('editContent').value;
     const date = document.getElementById('editDate').value;
     if (!title || !content) { alert('标题和内容不能为空'); return; }
-    // 简单 sanitize 内容，存储前移除危险标签（双重保障）
     content = sanitizeHtml(content);
     if (editingId===null) createArticle(title,content,date);
     else updateArticle(editingId,title,content,date);
@@ -997,7 +1054,7 @@ nav a:hover, .nav-btn:hover {
   }
   function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
-  // 图片上传与插入（光标位置）
+  // 图片上传与插入
   function insertImageAtCursor() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1094,6 +1151,7 @@ nav a:hover, .nav-btn:hover {
     document.querySelector('.close-fullscreen')?.addEventListener('click', closeFullscreen);
     document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); });
     document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor);
+    initSearch();
     initMobileSidebar();
   }
   init();
