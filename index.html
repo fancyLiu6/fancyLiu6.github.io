@@ -6,7 +6,7 @@
 <title>AI-SRE学习仓库 | Fancy 的博客</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d1d1f'/%3E%3Cpath fill='%23ffffff' d='M32 16c-8.8 0-16 7.2-16 16 0 7.1 4.6 13.1 10.9 15.2.8.1 1.1-.3 1.1-.8 0-.4 0-1.4-.1-2.8-4.4 1-5.3-2.1-5.3-2.1-.7-1.8-1.8-2.3-1.8-2.3-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.4 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.3-3.6-.4-7.4-1.8-7.4-8 0-1.8.6-3.2 1.7-4.4-.2-.4-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.4 3.8.2 4.2 1 1.2 1.7 2.6 1.7 4.4 0 6.2-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3 0 2.2-.1 3.9-.1 4.4 0 .4.3.9 1.1.8C43.4 45.1 48 39.1 48 32c0-8.8-7.2-16-16-16z'/%3E%3C/svg%3E">
 <style>
-/* ========== 全局样式 ========== */
+/* ========== 全局布局：侧边栏 + 主内容 ========== */
 * {
   box-sizing: border-box;
 }
@@ -19,21 +19,172 @@ body {
   background: url("images/bg.jpg") center/cover no-repeat fixed;
   color: #1d1d1f;
   transition: background 0.3s, color 0.2s;
+  display: flex;
+  min-height: 100vh;
+}
+/* 侧边栏 */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 280px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(30px);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 80px 20px 30px;
+  transition: background 0.3s;
+}
+body.dark .sidebar {
+  background: rgba(30, 30, 32, 0.85);
+  border-right-color: rgba(100, 100, 110, 0.5);
+}
+.sidebar-header {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+body.dark .sidebar-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+}
+.tree-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tree-nav li {
+  margin-bottom: 8px;
+}
+.tree-nav a {
+  display: block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #1d1d1f;
+  font-size: 14px;
+  transition: 0.2s;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.dark .tree-nav a {
+  color: #f5f5f7;
+}
+.tree-nav a:hover {
+  background: rgba(0,0,0,0.1);
+}
+body.dark .tree-nav a:hover {
+  background: rgba(255,255,255,0.1);
+}
+/* 主内容区域 */
+.main-content {
+  margin-left: 280px;
+  flex: 1;
+  padding: 0 20px;
+  width: calc(100% - 280px);
 }
 /* 暗色模式所有文字白色 */
 body.dark {
   background: #1c1c1e url("images/bg.jpg") center/cover no-repeat fixed;
-  color: #ffffff; /* 全局白色 */
+  color: #ffffff;
 }
 body.dark .stats-card,
 body.dark nav,
 body.dark .modal-content,
-body.dark .info-card {
+body.dark .info-card,
+body.dark .fullscreen-modal {
   background: rgba(30,30,32,0.85);
   border-color: rgba(100,100,110,0.5);
   color: #ffffff;
 }
-/* 卡片内文字强制白色 */
+/* 全屏模态框样式 */
+.fullscreen-modal {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+}
+.fullscreen-content {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(40px);
+  margin: auto;
+  padding: 40px 50px;
+  border-radius: 32px;
+  max-width: 900px;
+  width: 90%;
+  max-height: 85%;
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+body.dark .fullscreen-content {
+  background: rgba(30,30,32,0.95);
+  border-color: rgba(100,100,110,0.6);
+  color: white;
+}
+.fullscreen-content h2 {
+  margin-top: 0;
+  font-size: 32px;
+}
+.fullscreen-content .fullscreen-meta {
+  margin: 15px 0 20px;
+  font-size: 14px;
+  color: #8e8e93;
+  display: flex;
+  gap: 20px;
+}
+body.dark .fullscreen-content .fullscreen-meta {
+  color: #aaa;
+}
+.fullscreen-content .fullscreen-body {
+  font-size: 17px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.fullscreen-body img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+.close-fullscreen {
+  background: #0071e3;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 30px;
+}
+.close-fullscreen:hover {
+  background: #005bb5;
+}
+body.dark .close-fullscreen {
+  background: #0a84ff;
+}
+body.dark .close-fullscreen:hover {
+  background: #0063ce;
+}
+/* 卡片内图片样式 */
+.post p img {
+  max-width: 100%;
+  border-radius: 16px;
+  margin: 10px 0;
+}
+/* 卡片内文字强制白色（暗色） */
 body.dark .post p,
 body.dark .info-card p,
 body.dark .stat-label,
@@ -95,6 +246,7 @@ body.dark .language-detection {
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
   transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+  cursor: pointer;
 }
 .post:hover {
   transform: translateY(-6px);
@@ -110,7 +262,12 @@ body.dark .post:hover {
   background: rgba(50, 50, 55, 0.7);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
-/* ----- 其余样式（保持不变） ----- */
+/* 阻止按钮触发卡片全屏 */
+.post-actions button {
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
 header {
   text-align: center;
   padding: 60px 20px 40px;
@@ -202,7 +359,7 @@ nav a:hover, .nav-btn:hover {
   margin-top: 0;
   font-size: 28px;
 }
-.post p {
+.post .post-content {
   font-size: 17px;
   line-height: 1.8;
   color: #1d1d1f;
@@ -330,7 +487,7 @@ nav a:hover, .nav-btn:hover {
   margin: auto;
   padding: 30px 40px;
   border-radius: 32px;
-  max-width: 600px;
+  max-width: 700px;
   width: 90%;
   border: 1px solid rgba(255,255,255,0.8);
 }
@@ -348,6 +505,21 @@ nav a:hover, .nav-btn:hover {
 .modal-content textarea {
   min-height: 200px;
   resize: vertical;
+}
+.image-upload-btn {
+  background: rgba(0,0,0,0.07);
+  border: none;
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.image-upload-btn:hover {
+  background: rgba(0,0,0,0.12);
 }
 .language-detection {
   margin: -10px 0 15px;
@@ -403,17 +575,52 @@ nav a:hover, .nav-btn:hover {
 @keyframes blink {
   50% { opacity: 0; }
 }
-@media (max-width: 600px) {
-  .post { padding: 25px 20px; margin: 0 16px 30px; }
-  .post-meta { flex-direction: column; align-items: flex-start; }
-  .post-actions { align-self: flex-end; }
-  .stats-card { margin: 20px 16px 0; padding: 12px 20px; }
-  .info-card { margin: 30px 16px; padding: 25px 20px; }
+@media (max-width: 800px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    width: 260px;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1100;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+@media (min-width: 801px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+.menu-toggle {
+  display: none;
 }
 </style>
 </head>
 <body>
-
+<button class="menu-toggle" id="menuToggle">☰ 目录</button>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">📖 文章目录</div>
+  <ul class="tree-nav" id="treeNav"></ul>
+</aside>
+<div class="main-content">
 <header>
   <h1 class="typing">Fancy 的博客</h1>
   <p>记录学习与成长 ✨</p>
@@ -457,13 +664,18 @@ nav a:hover, .nav-btn:hover {
 
 <button id="backToTop">↑</button>
 
+<!-- 编辑/新建模态框 增加图片上传按钮 -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">编辑文章</h3>
     <label>标题</label>
     <input type="text" id="editTitle" placeholder="标题">
     <label>内容</label>
-    <textarea id="editContent" placeholder="文章内容"></textarea>
+    <textarea id="editContent" placeholder="文章内容（支持 HTML，可直接插入图片标签）"></textarea>
+    <div style="margin-bottom: 10px;">
+      <button type="button" id="insertImageBtn" class="image-upload-btn">🖼️ 插入图片</button>
+      <span style="font-size:12px; margin-left:10px;">点击后选择图片，将自动插入到光标位置</span>
+    </div>
     <div id="languageHint" class="language-detection"></div>
     <label>日期</label>
     <input type="date" id="editDate">
@@ -475,7 +687,29 @@ nav a:hover, .nav-btn:hover {
   </div>
 </div>
 
+<!-- 全屏阅读模态框 -->
+<div id="fullscreenModal" class="fullscreen-modal">
+  <div class="fullscreen-content">
+    <h2 id="fullscreenTitle"></h2>
+    <div class="fullscreen-meta">
+      <span id="fullscreenDate"></span>
+      <span id="fullscreenViews"></span>
+    </div>
+    <div id="fullscreenBody" class="fullscreen-body"></div>
+    <button class="close-fullscreen">关闭</button>
+  </div>
+</div>
+</div>
+
 <script>
+  // ---------- 安全 HTML 渲染 (过滤 script 标签) ----------
+  function sanitizeHtml(html) {
+    // 简单移除 <script> 标签及其内容，可扩展
+    return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+               .replace(/on\w+="[^"]*"/gi, '')
+               .replace(/on\w+='[^']*'/gi, '');
+  }
+
   // ---------- 语言检测 ----------
   function detectLanguage(text) {
     if (!text.trim()) return "未知";
@@ -514,7 +748,11 @@ nav a:hover, .nav-btn:hover {
     { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, createdAt: 1745884800000, updatedAt: 1745884800000 }
   ];
 
-  function countWords(text) { return text.replace(/\s+/g, '').length; }
+  function countWords(text) {
+    // 移除 HTML 标签后统计纯文本字数
+    const plainText = text.replace(/<[^>]*>/g, '');
+    return plainText.replace(/\s+/g, '').length;
+  }
   function updateStats() {
     document.getElementById('totalArticlesCount').innerText = totalArticles.length;
     const totalWords = totalArticles.reduce((sum, art) => sum + countWords(art.content), 0);
@@ -552,6 +790,51 @@ nav a:hover, .nav-btn:hover {
     else if (currentSort === 'updated_desc') totalArticles.sort((a,b)=>b.updatedAt - a.updatedAt);
   }
 
+  // 渲染侧边栏导航树
+  function renderSidebar() {
+    const container = document.getElementById('treeNav');
+    if (!container) return;
+    if (totalArticles.length === 0) {
+      container.innerHTML = '<li style="color:gray;">暂无文章</li>';
+      return;
+    }
+    let html = '';
+    for (let art of totalArticles) {
+      html += `<li><a data-id="${art.id}" class="nav-link">${escapeHtml(art.title)}</a></li>`;
+    }
+    container.innerHTML = html;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const id = parseInt(link.getAttribute('data-id'));
+        const index = totalArticles.findIndex(a => a.id === id);
+        if (index === -1) return;
+        const targetPage = Math.floor(index / pageSize) + 1;
+        if (targetPage !== currentPage) {
+          currentPage = targetPage;
+          renderArticles();
+          setTimeout(() => scrollToArticle(id), 100);
+        } else {
+          scrollToArticle(id);
+        }
+      });
+    });
+  }
+
+  function scrollToArticle(articleId) {
+    const articleCard = document.querySelector(`.post[data-id="${articleId}"]`);
+    if (articleCard) articleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showFullscreenArticle(article) {
+    document.getElementById('fullscreenTitle').innerText = article.title;
+    document.getElementById('fullscreenDate').innerText = `📅 ${article.date}`;
+    document.getElementById('fullscreenViews').innerText = `👀 ${article.views} 次阅读`;
+    let safeBody = sanitizeHtml(article.content);
+    document.getElementById('fullscreenBody').innerHTML = safeBody;
+    document.getElementById('fullscreenModal').style.display = 'flex';
+  }
+  function closeFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
+
   function renderArticles() {
     sortArticles();
     const start = (currentPage-1)*pageSize;
@@ -561,15 +844,17 @@ nav a:hover, .nav-btn:hover {
     if (totalArticles.length === 0) {
       container.innerHTML = '<div style="text-align:center;padding:60px;">暂无文章，点击「新建文章」开始创作 ✍️</div>';
       document.getElementById('paginationContainer').innerHTML = '';
+      renderSidebar();
       return;
     }
     let html = '';
     for (let art of pageArticles) {
       const wc = countWords(art.content);
+      const safeContent = sanitizeHtml(art.content);
       html += `
-        <section class="post">
+        <section class="post" data-id="${art.id}">
           <h2>${escapeHtml(art.title)}</h2>
-          <p>${escapeHtml(art.content)}</p>
+          <div class="post-content">${safeContent}</div>
           <div class="post-meta">
             <div class="meta-left">
               <span>📅 ${art.date}</span>
@@ -585,10 +870,31 @@ nav a:hover, .nav-btn:hover {
       `;
     }
     container.innerHTML = html;
-    document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',()=>openEditModal(parseInt(btn.dataset.id))));
-    document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',()=>deleteArticle(parseInt(btn.dataset.id))));
-    document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',()=>incrementView(parseInt(el.dataset.id))));
+    document.querySelectorAll('.post').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.edit-btn') || e.target.closest('.delete-btn')) return;
+        const id = parseInt(card.getAttribute('data-id'));
+        const article = totalArticles.find(a => a.id === id);
+        if (article) showFullscreenArticle(article);
+      });
+    });
+    document.querySelectorAll('.edit-btn').forEach(btn=>btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.id);
+      openEditModal(id);
+    }));
+    document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.id);
+      deleteArticle(id);
+    }));
+    document.querySelectorAll('.read-count').forEach(el=>el.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const id = parseInt(el.dataset.id);
+      incrementView(id);
+    }));
     renderPagination();
+    renderSidebar();
   }
 
   function renderPagination() {
@@ -674,20 +980,50 @@ nav a:hover, .nav-btn:hover {
     }
     updateLanguageHint(contentTextarea.value);
     modal.style.display = 'flex';
+    // 重新挂载图片插入事件（因为textarea可能变化，但事件委托已处理）
   }
   function updateLanguageHint(text){ document.getElementById('languageHint').innerHTML = `🔍 检测到代码类型：${detectLanguage(text)}`; }
   function closeEditModal(){ document.getElementById('editModal').style.display='none'; editingId=null; }
   function saveEdit(){
     const title = document.getElementById('editTitle').value.trim();
-    const content = document.getElementById('editContent').value;
+    let content = document.getElementById('editContent').value;
     const date = document.getElementById('editDate').value;
     if (!title || !content) { alert('标题和内容不能为空'); return; }
+    // 简单 sanitize 内容，存储前移除危险标签（双重保障）
+    content = sanitizeHtml(content);
     if (editingId===null) createArticle(title,content,date);
     else updateArticle(editingId,title,content,date);
     closeEditModal();
   }
   function handleDeleteFromModal(){ if (editingId!==null){ deleteArticle(editingId); closeEditModal(); } }
 
+  // 图片上传与插入（光标位置）
+  function insertImageAtCursor() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const base64 = ev.target.result;
+        const imgTag = `<img src="${base64}" alt="uploaded image" style="max-width:100%; border-radius:12px; margin:10px 0;">`;
+        const textarea = document.getElementById('editContent');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const content = textarea.value;
+        const newContent = content.substring(0, start) + imgTag + content.substring(end);
+        textarea.value = newContent;
+        textarea.dispatchEvent(new Event('input'));
+        updateLanguageHint(newContent);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }
+
+  // 后端模拟同步（可选）
   const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
   async function syncToBackend(action,article){
     let url = API_BASE;
@@ -727,6 +1063,15 @@ nav a:hover, .nav-btn:hover {
   function escapeHtml(str){ return str.replace(/[&<>]/g,m=>{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
   function changeSort(value){ currentSort=value; currentPage=1; sortArticles(); renderArticles(); }
 
+  function initMobileSidebar() {
+    const toggleBtn = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+      document.querySelector('.main-content').addEventListener('click', () => sidebar.classList.remove('open'));
+    }
+  }
+
   function init(){
     loadDataFromStorage();
     sortArticles();
@@ -746,6 +1091,10 @@ nav a:hover, .nav-btn:hover {
     contentTextarea.addEventListener('input', (e) => updateLanguageHint(e.target.value));
     document.getElementById('sortSelect').value = currentSort;
     document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
+    document.querySelector('.close-fullscreen')?.addEventListener('click', closeFullscreen);
+    document.getElementById('fullscreenModal').addEventListener('click', (e) => { if (e.target === document.getElementById('fullscreenModal')) closeFullscreen(); });
+    document.getElementById('insertImageBtn').addEventListener('click', insertImageAtCursor);
+    initMobileSidebar();
   }
   init();
 </script>
