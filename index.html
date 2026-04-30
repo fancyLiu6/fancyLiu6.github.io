@@ -269,7 +269,7 @@ body.dark .fullscreen-meta {
   border-radius: 12px;
   margin: 12px 0;
 }
-/* 按钮组 */
+/* 优化后的编辑UI按钮组 */
 .fullscreen-actions {
   position: absolute;
   top: 20px;
@@ -279,79 +279,54 @@ body.dark .fullscreen-meta {
   z-index: 10;
 }
 .fullscreen-actions button {
-  background: #0071e3;
-  color: white;
   border: none;
   border-radius: 30px;
   padding: 8px 20px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
 }
-.fullscreen-actions button:hover {
+.fullscreen-actions .edit-btn {
+  background: #0071e3;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.fullscreen-actions .edit-btn:hover {
   background: #005bb5;
+  transform: scale(1.02);
 }
-body.dark .fullscreen-actions button {
+.fullscreen-actions .close-btn {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+.fullscreen-actions .close-btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+body.dark .fullscreen-actions .edit-btn {
   background: #0a84ff;
 }
-body.dark .fullscreen-actions button:hover {
+body.dark .fullscreen-actions .edit-btn:hover {
   background: #0063ce;
 }
-.close-fullscreen {
-  background: rgba(0,0,0,0.6) !important;
+body.dark .fullscreen-actions .close-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
 }
-.close-fullscreen:hover {
-  background: black !important;
+body.dark .fullscreen-actions .close-btn:hover {
+  background: rgba(255,255,255,0.3);
 }
 @media (max-width: 800px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
-    width: 260px;
-  }
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .menu-toggle {
-    display: block;
-    position: fixed;
-    left: 20px;
-    top: 20px;
-    z-index: 1100;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .fullscreen-modal {
-    left: 0;
-  }
-  .fullscreen-main {
-    padding: 20px;
-  }
-  .fullscreen-toc {
-    display: none;
-  }
   .fullscreen-actions {
     top: 10px;
     right: 10px;
+    gap: 8px;
   }
-}
-@media (min-width: 801px) {
-  .menu-toggle {
-    display: none;
+  .fullscreen-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
   }
-}
-.menu-toggle {
-  display: none;
 }
 /* 卡片内 Markdown 渲染样式 */
 .post .post-content {
@@ -888,7 +863,7 @@ nav a:hover, .nav-btn:hover {
   </div>
 </div>
 
-<!-- 全屏阅读模态框（带 TOC 和编辑按钮） -->
+<!-- 全屏阅读模态框（带目录和优化编辑UI） -->
 <div id="fullscreenModal" class="fullscreen-modal">
   <div class="fullscreen-content">
     <div class="fullscreen-main">
@@ -905,8 +880,8 @@ nav a:hover, .nav-btn:hover {
       <div id="tocContent"></div>
     </div>
     <div class="fullscreen-actions">
-      <button id="fullscreenEditBtn">✏️ 编辑</button>
-      <button class="close-fullscreen">关闭</button>
+      <button id="fullscreenEditBtn" class="edit-btn">✏️ 编辑</button>
+      <button class="close-btn close-fullscreen">关闭</button>
     </div>
   </div>
 </div>
@@ -943,7 +918,7 @@ nav a:hover, .nav-btn:hover {
     return sanitizeHtml(rawHtml);
   }
 
-  // 提取 TOC 从 Markdown
+  // 提取 TOC
   function extractTOC(markdown) {
     const lines = markdown.split('\n');
     const toc = [];
@@ -1175,7 +1150,6 @@ nav a:hover, .nav-btn:hover {
     });
   }
 
-  // 全屏显示文章
   let currentFullscreenArticleId = null;
   function showFullscreenArticle(article) {
     currentFullscreenArticleId = article.id;
@@ -1204,7 +1178,6 @@ nav a:hover, .nav-btn:hover {
 
   function closeFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
-  // 编辑文章：关闭全屏，打开编辑模态框
   function editCurrentArticle() {
     if (currentFullscreenArticleId !== null) {
       closeFullscreen();
@@ -1445,9 +1418,9 @@ nav a:hover, .nav-btn:hover {
     }
   }
 
-  const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
-  async function syncToBackend(action,article){ /* 模拟同步，可忽略 */ }
-  function notifyBackend(action,article){ /* 忽略 */ }
+  // 后端模拟同步（忽略）
+  async function syncToBackend(action,article){}
+  function notifyBackend(action,article){}
 
   function setupNavigation(){
     document.getElementById('navHome').addEventListener('click',e=>{e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});});
@@ -1515,7 +1488,6 @@ nav a:hover, .nav-btn:hover {
     document.getElementById('sortSelect').value = currentSort;
     document.getElementById('sortSelect').addEventListener('change',(e)=>changeSort(e.target.value));
     document.getElementById('clearTagFilter').addEventListener('click', clearTagFilter);
-    // 全屏阅读中的编辑按钮
     const fullscreenEditBtn = document.getElementById('fullscreenEditBtn');
     if (fullscreenEditBtn) fullscreenEditBtn.addEventListener('click', editCurrentArticle);
     const closeFullscreenBtn = document.querySelector('.close-fullscreen');
