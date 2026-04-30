@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-SRE学习仓库 | Fancy 的博客</title>
-
 <style>
-/* ===== 全局 ===== */
+/* ========== 样式（与原保持一致，仅增加排序控件样式） ========== */
 * {
   box-sizing: border-box;
 }
@@ -53,7 +52,6 @@ body.dark .modal-content textarea {
 body.dark .delete-btn {
   background: rgba(255,100,100,0.2);
 }
-/* ===== Header ===== */
 header {
   text-align: center;
   padding: 60px 20px 40px;
@@ -77,7 +75,6 @@ header p {
 body.dark header p {
   color: #ccc;
 }
-/* 导航 */
 nav {
   position: sticky;
   top: 20px;
@@ -109,6 +106,19 @@ nav a, .nav-btn {
 nav a:hover, .nav-btn:hover {
   opacity: 0.5;
 }
+.sort-select {
+  background: rgba(0,0,0,0.05);
+  border: none;
+  border-radius: 30px;
+  padding: 4px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+body.dark .sort-select {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
 .theme-toggle {
   cursor: pointer;
   background: none;
@@ -118,7 +128,6 @@ nav a:hover, .nav-btn:hover {
   font-weight: 500;
   color: inherit;
 }
-/* 文章卡片 */
 .post {
   margin: 0 auto 40px auto;
   padding: 40px 50px;
@@ -196,7 +205,6 @@ body.dark .post-actions button {
 .delete-btn:hover {
   background: rgba(255,59,48,0.2);
 }
-/* 信息卡片（关于我、联系） */
 .info-card {
   margin: 40px auto;
   padding: 40px 50px;
@@ -219,7 +227,6 @@ body.dark .post-actions button {
 body.dark .info-card p {
   color: #e5e5ea;
 }
-/* 加载更多按钮 */
 .load-more {
   display: block;
   margin: 20px auto 60px auto;
@@ -241,7 +248,6 @@ body.dark .load-more {
   background: rgba(100,100,110,0.8);
   color: white;
 }
-/* 返回顶部 */
 #backToTop {
   position: fixed;
   bottom: 30px;
@@ -263,7 +269,6 @@ body.dark .load-more {
 #backToTop:hover {
   background: black;
 }
-/* 模态框 */
 .modal {
   display: none;
   position: fixed;
@@ -332,7 +337,6 @@ body.dark .load-more {
   color: white;
   margin-right: auto;
 }
-/* 打字动画 */
 .typing {
   display: inline-block;
   overflow: hidden;
@@ -371,7 +375,6 @@ body.dark .load-more {
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -384,22 +387,24 @@ body.dark .load-more {
   <a href="#" id="navAbout">关于我</a>
   <a href="#" id="navArticles">文章</a>
   <a href="#" id="navContact">联系</a>
+  <select id="sortSelect" class="sort-select">
+    <option value="created_desc">📅 新建时间（新→旧）</option>
+    <option value="created_asc">📅 新建时间（旧→新）</option>
+    <option value="updated_desc">✏️ 最近编辑（新→旧）</option>
+  </select>
   <button class="nav-btn" id="newPostBtn">➕ 新建文章</button>
   <button class="theme-toggle" id="themeToggle">🌙 暗色</button>
 </nav>
 
 <div id="postsContainer"></div>
-
 <button id="loadMoreBtn" class="load-more">加载更多</button>
 
-<!-- 关于我区域 -->
 <div id="about" class="info-card">
   <h2>📖 关于我</h2>
   <p>大家好，我是 Fancy，一名热爱技术的 SRE 工程师。喜欢研究自动化运维、云原生架构和 AI 赋能。这个博客用来记录学习笔记、技术思考和生活感悟。欢迎交流！</p>
   <p>GitHub: <a href="#" style="color: #0071e3;">github.com/fancy</a> (示例)</p>
 </div>
 
-<!-- 联系区域 -->
 <div id="contact" class="info-card">
   <h2>📧 联系我</h2>
   <p>如果你有任何问题或建议，可以通过以下方式联系我：</p>
@@ -410,7 +415,6 @@ body.dark .load-more {
 
 <button id="backToTop">↑</button>
 
-<!-- 编辑/新建模态框 -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">编辑文章</h3>
@@ -431,24 +435,24 @@ body.dark .load-more {
 <script>
   // ---------- 文章数据 ----------
   let totalArticles = [];
-  let currentPage = 1;
-  const pageSize = 3;
+  let visibleCount = 3;      // 当前显示的文章数量（每次加载更多增加3）
+  const step = 3;
 
-  // 预设初始文章
+  // 预设初始文章（带 createdAt 和 updatedAt）
   const defaultArticles = [
-    { id: 1, title: "我的第一篇文章", content: "这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。", date: "2025-04-01", views: 128 },
-    { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，dict2items可以方便遍历字典，结合loop使用。", date: "2025-04-15", views: 86 },
-    { id: 3, title: "SRE 的北极星指标", content: "SLO（服务水平目标）是SRE的核心指标，直接反映用户对系统稳定性的感知。", date: "2025-04-20", views: 203 },
-    { id: 4, title: "Ubuntu 静态IP配置", content: "使用netplan轻松设置固定IP，别忘了apply。", date: "2025-04-22", views: 55 },
-    { id: 5, title: "使用 Ansible 管理 NFS", content: "通过mount模块批量挂载，并通过lineinfile配置/etc/fstab。", date: "2025-04-25", views: 42 }
+    { id: 1, title: "我的第一篇文章", content: "这是我的博客正式上线啦！以后会在这里记录学习前端和技术的过程。", date: "2025-04-01", views: 128, createdAt: 1743494400000, updatedAt: 1743494400000 },
+    { id: 2, title: "Ansible 学习笔记 - 循环字典", content: "在Ansible中，dict2items可以方便遍历字典，结合loop使用。", date: "2025-04-15", views: 86, createdAt: 1744704000000, updatedAt: 1744704000000 },
+    { id: 3, title: "SRE 的北极星指标", content: "SLO（服务水平目标）是SRE的核心指标，直接反映用户对系统稳定性的感知。", date: "2025-04-20", views: 203, createdAt: 1745193600000, updatedAt: 1745193600000 },
+    { id: 4, title: "Ubuntu 静态IP配置", content: "使用netplan轻松设置固定IP，别忘了apply。", date: "2025-04-22", views: 55, createdAt: 1745366400000, updatedAt: 1745366400000 },
+    { id: 5, title: "使用 Ansible 管理 NFS", content: "通过mount模块批量挂载，并通过lineinfile配置/etc/fstab。", date: "2025-04-25", views: 42, createdAt: 1745625600000, updatedAt: 1745625600000 }
   ];
   const moreArticles = [
-    { id: 6, title: "一文读懂 when 语句", content: "Ansible中when用于条件判断，支持多种表达式。", date: "2025-04-26", views: 31 },
-    { id: 7, title: "注册变量和 changed 判断", content: "register 捕获任务输出，通过when结合changed做条件触发。", date: "2025-04-27", views: 27 },
-    { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64 }
+    { id: 6, title: "一文读懂 when 语句", content: "Ansible中when用于条件判断，支持多种表达式。", date: "2025-04-26", views: 31, createdAt: 1745712000000, updatedAt: 1745712000000 },
+    { id: 7, title: "注册变量和 changed 判断", content: "register 捕获任务输出，通过when结合changed做条件触发。", date: "2025-04-27", views: 27, createdAt: 1745798400000, updatedAt: 1745798400000 },
+    { id: 8, title: "Prometheus 监控入门", content: "拉取指标，配置告警，Grafana可视化。", date: "2025-04-28", views: 64, createdAt: 1745884800000, updatedAt: 1745884800000 }
   ];
 
-  // ---------- localStorage 操作 ----------
+  // ---------- localStorage 加载与迁移 ----------
   function loadDataFromStorage() {
     const stored = localStorage.getItem('blog_articles');
     if (stored) {
@@ -460,113 +464,50 @@ body.dark .load-more {
         if (!existIds.has(art.id)) totalArticles.push(art);
       }
     }
-    totalArticles = totalArticles.map(a => ({ ...a, views: a.views || 0 }));
+    // 补全缺失字段（兼容旧数据）
+    let needSave = false;
+    totalArticles = totalArticles.map(art => {
+      let updated = art;
+      if (!art.createdAt) {
+        needSave = true;
+        let timestamp = Date.parse(art.date);
+        if (isNaN(timestamp)) timestamp = 1743000000000 + (art.id * 86400000);
+        updated.createdAt = timestamp;
+      }
+      if (!art.updatedAt) {
+        needSave = true;
+        updated.updatedAt = updated.createdAt;
+      }
+      if (art.views === undefined) {
+        needSave = true;
+        updated.views = 0;
+      }
+      return updated;
+    });
+    if (needSave) saveArticlesToStorage();
   }
 
   function saveArticlesToStorage() {
     localStorage.setItem('blog_articles', JSON.stringify(totalArticles));
   }
 
-  // ---------- 后端同步模拟 ----------
-  const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
-  async function syncToBackend(action, article) {
-    let url = API_BASE;
-    let options = {};
-    switch (action) {
-      case 'create':
-        options = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: article.title, body: article.content, userId: 1 })
-        };
-        break;
-      case 'update':
-        options = {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: article.id, title: article.title, body: article.content })
-        };
-        url += `/${article.id}`;
-        break;
-      case 'delete':
-        options = { method: 'DELETE' };
-        url += `/${article.id}`;
-        break;
-      default: return;
-    }
-    try {
-      const response = await fetch(url, options);
-      const data = await response.json();
-      console.log(`[后端同步] ${action} 成功:`, data);
-    } catch (err) {
-      console.error(`[后端同步] ${action} 失败:`, err);
+  // ---------- 排序函数 ----------
+  let currentSort = 'created_desc'; // 默认按新建时间新→旧
+  function sortArticles() {
+    if (currentSort === 'created_desc') {
+      totalArticles.sort((a, b) => b.createdAt - a.createdAt);
+    } else if (currentSort === 'created_asc') {
+      totalArticles.sort((a, b) => a.createdAt - b.createdAt);
+    } else if (currentSort === 'updated_desc') {
+      totalArticles.sort((a, b) => b.updatedAt - a.updatedAt);
     }
   }
 
-  function notifyBackend(action, article) {
-    syncToBackend(action, article);
-  }
-
-  // ---------- CRUD ----------
-  function generateNewId() {
-    const maxId = totalArticles.length > 0 ? Math.max(...totalArticles.map(a => a.id)) : 0;
-    return maxId + 1;
-  }
-
-  function createArticle(title, content, date) {
-    const newId = generateNewId();
-    const newArticle = {
-      id: newId,
-      title: title,
-      content: content,
-      date: date || new Date().toISOString().slice(0,10),
-      views: 0
-    };
-    totalArticles.unshift(newArticle);
-    saveArticlesToStorage();
-    notifyBackend('create', newArticle);
-    currentPage = 1;
-    renderArticles();
-  }
-
-  function updateArticle(id, title, content, date) {
-    const index = totalArticles.findIndex(a => a.id === id);
-    if (index !== -1) {
-      totalArticles[index].title = title;
-      totalArticles[index].content = content;
-      totalArticles[index].date = date;
-      saveArticlesToStorage();
-      notifyBackend('update', totalArticles[index]);
-      renderArticles();
-    }
-  }
-
-  function deleteArticle(id) {
-    if (!confirm("确定要删除这篇文章吗？")) return;
-    const article = totalArticles.find(a => a.id === id);
-    if (!article) return;
-    totalArticles = totalArticles.filter(a => a.id !== id);
-    saveArticlesToStorage();
-    notifyBackend('delete', article);
-    if (totalArticles.length <= (currentPage-1)*pageSize && currentPage > 1) {
-      currentPage--;
-    }
-    renderArticles();
-  }
-
-  function incrementView(articleId) {
-    const article = totalArticles.find(a => a.id === articleId);
-    if (article) {
-      article.views += 1;
-      saveArticlesToStorage();
-      renderArticles();
-    }
-  }
-
-  // ---------- 渲染分页 ----------
+  // ---------- 渲染可见文章（基于 visibleCount）----------
   function renderArticles() {
-    const start = (currentPage - 1) * pageSize;
-    const pageArticles = totalArticles.slice(start, start + pageSize);
+    // 先排序
+    sortArticles();
+    const visibleArticles = totalArticles.slice(0, visibleCount);
     const container = document.getElementById('postsContainer');
     if (!container) return;
     if (totalArticles.length === 0) {
@@ -574,13 +515,9 @@ body.dark .load-more {
       document.getElementById('loadMoreBtn').style.display = 'none';
       return;
     }
-    if (pageArticles.length === 0 && currentPage > 1) {
-      currentPage--;
-      return renderArticles();
-    }
 
     let html = '';
-    for (let art of pageArticles) {
+    for (let art of visibleArticles) {
       html += `
         <section class="post">
           <h2>${escapeHtml(art.title)}</h2>
@@ -600,7 +537,7 @@ body.dark .load-more {
     }
     container.innerHTML = html;
 
-    // 绑定事件
+    // 绑定编辑/删除/阅读事件
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(btn.getAttribute('data-id'));
@@ -620,8 +557,9 @@ body.dark .load-more {
       });
     });
 
+    // 处理“加载更多”按钮显示
     const loadMoreBtn = document.getElementById('loadMoreBtn');
-    if (totalArticles.length <= currentPage * pageSize) {
+    if (visibleCount >= totalArticles.length) {
       loadMoreBtn.style.display = 'none';
     } else {
       loadMoreBtn.style.display = 'block';
@@ -629,13 +567,112 @@ body.dark .load-more {
   }
 
   function loadMore() {
-    currentPage++;
+    visibleCount += step;
     renderArticles();
+  }
+
+  // 当排序改变时，重置 visibleCount 并重新渲染
+  function changeSort(value) {
+    currentSort = value;
+    visibleCount = step;   // 重置为初始显示数量
+    renderArticles();
+  }
+
+  // ---------- 后端模拟同步（可选）----------
+  const API_BASE = 'https://jsonplaceholder.typicode.com/posts';
+  async function syncToBackend(action, article) {
+    let url = API_BASE;
+    let options = {};
+    switch (action) {
+      case 'create':
+        options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: article.title, body: article.content, userId: 1 }) };
+        break;
+      case 'update':
+        options = { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: article.id, title: article.title, body: article.content }) };
+        url += `/${article.id}`;
+        break;
+      case 'delete':
+        options = { method: 'DELETE' };
+        url += `/${article.id}`;
+        break;
+      default: return;
+    }
+    try {
+      const response = await fetch(url, options);
+      const data = await response.json();
+      console.log(`[后端同步] ${action} 成功:`, data);
+    } catch (err) {
+      console.error(`[后端同步] ${action} 失败:`, err);
+    }
+  }
+  function notifyBackend(action, article) {
+    if (action !== 'create' && action !== 'update' && action !== 'delete') return;
+    syncToBackend(action, article);
+  }
+
+  // ---------- CRUD 操作 ----------
+  function generateNewId() {
+    const maxId = totalArticles.length > 0 ? Math.max(...totalArticles.map(a => a.id)) : 0;
+    return maxId + 1;
+  }
+
+  function createArticle(title, content, date) {
+    const now = Date.now();
+    const newId = generateNewId();
+    const newArticle = {
+      id: newId,
+      title, content,
+      date: date || new Date().toISOString().slice(0,10),
+      views: 0,
+      createdAt: now,
+      updatedAt: now
+    };
+    totalArticles.push(newArticle);
+    // 排序并重新渲染
+    sortArticles();
+    visibleCount = step;
+    renderArticles();
+    saveArticlesToStorage();
+    notifyBackend('create', newArticle);
+  }
+
+  function updateArticle(id, title, content, date) {
+    const index = totalArticles.findIndex(a => a.id === id);
+    if (index !== -1) {
+      totalArticles[index].title = title;
+      totalArticles[index].content = content;
+      totalArticles[index].date = date;
+      totalArticles[index].updatedAt = Date.now();   // 更新编辑时间
+      saveArticlesToStorage();
+      notifyBackend('update', totalArticles[index]);
+      // 重新排序（基于当前排序规则）
+      sortArticles();
+      renderArticles();
+    }
+  }
+
+  function deleteArticle(id) {
+    if (!confirm("确定要删除这篇文章吗？")) return;
+    const article = totalArticles.find(a => a.id === id);
+    if (!article) return;
+    totalArticles = totalArticles.filter(a => a.id !== id);
+    saveArticlesToStorage();
+    notifyBackend('delete', article);
+    if (visibleCount > totalArticles.length) visibleCount = totalArticles.length;
+    renderArticles();
+  }
+
+  function incrementView(articleId) {
+    const article = totalArticles.find(a => a.id === articleId);
+    if (article) {
+      article.views += 1;
+      saveArticlesToStorage();
+      renderArticles();  // 重新渲染以更新阅读数
+    }
   }
 
   // ---------- 模态框逻辑 ----------
   let editingId = null;
-
   function openEditModal(id = null) {
     editingId = id;
     const modal = document.getElementById('editModal');
@@ -659,12 +696,10 @@ body.dark .load-more {
     }
     modal.style.display = 'flex';
   }
-
   function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
     editingId = null;
   }
-
   function saveEdit() {
     const title = document.getElementById('editTitle').value.trim();
     const content = document.getElementById('editContent').value.trim();
@@ -680,7 +715,6 @@ body.dark .load-more {
     }
     closeEditModal();
   }
-
   function handleDeleteFromModal() {
     if (editingId !== null) {
       deleteArticle(editingId);
@@ -688,35 +722,12 @@ body.dark .load-more {
     }
   }
 
-  // ---------- 导航跳转功能 ----------
+  // ---------- 导航跳转 ----------
   function setupNavigation() {
-    const homeLink = document.getElementById('navHome');
-    const aboutLink = document.getElementById('navAbout');
-    const articlesLink = document.getElementById('navArticles');
-    const contactLink = document.getElementById('navContact');
-
-    homeLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    aboutLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
-    });
-
-    articlesLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      const postsContainer = document.getElementById('postsContainer');
-      if (postsContainer) {
-        postsContainer.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-
-    contactLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    });
+    document.getElementById('navHome').addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    document.getElementById('navAbout').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('about').scrollIntoView({ behavior: 'smooth' }); });
+    document.getElementById('navArticles').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('postsContainer').scrollIntoView({ behavior: 'smooth' }); });
+    document.getElementById('navContact').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); });
   }
 
   // ---------- 暗色模式 ----------
@@ -748,13 +759,25 @@ body.dark .load-more {
     if (window.scrollY > 300) btn.style.display = 'flex';
     else btn.style.display = 'none';
   }
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  // ---------- 工具函数 ----------
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
   }
 
   // ---------- 初始化 ----------
   function init() {
     loadDataFromStorage();
+    // 初始排序（默认新到旧）
+    currentSort = 'created_desc';
+    sortArticles();
+    visibleCount = step;
     renderArticles();
     initDarkMode();
     setupNavigation();
@@ -766,18 +789,11 @@ body.dark .load-more {
     document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
     document.getElementById('saveEditBtn').addEventListener('click', saveEdit);
     document.getElementById('deleteArticleBtn').addEventListener('click', handleDeleteFromModal);
-    document.getElementById('editModal').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('editModal')) closeEditModal();
-    });
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+    document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) closeEditModal(); });
+    // 排序下拉框事件
+    const sortSelect = document.getElementById('sortSelect');
+    sortSelect.value = currentSort;
+    sortSelect.addEventListener('change', (e) => changeSort(e.target.value));
   }
 
   init();
